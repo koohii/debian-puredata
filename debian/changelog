@@ -17,8 +17,9 @@ puredata (0.42.5-1) unstable; urgency=low
   * debian/rules: do not compress .pd files
   * debian/puredata.desktop: remove obsolete encoding
   * debian/doc-base.puredata: remove top section Apps
+  * debian/copyright: detail of different files
 
- -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 03:25:16 +0100
+ -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 03:48:24 +0100
 
 puredata (0.41.4-1) unstable; urgency=low
 
