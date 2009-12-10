@@ -1,6 +1,6 @@
 puredata (0.42.5-1) unstable; urgency=low
 
-  * New upstream release (closes: #473763)
+  * New upstream release (closes: #473763, #458287, #349314)
   * Adopt package (closes: #547030)
   * Drop Build-Depends on libjack100.0-dev (closes: #527427)
   * Package ships m_pd.h since 1999 (closes: #405488)
@@ -21,7 +21,7 @@ puredata (0.42.5-1) unstable; urgency=low
   * debian/rules: fix pd.tk permissions in dh_fixperms
   * debian/puredata.xpm: transparent background
 
- -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 04:33:14 +0100
+ -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 04:57:36 +0100
 
 puredata (0.41.4-1) unstable; urgency=low
 
