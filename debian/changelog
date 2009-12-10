@@ -1,3 +1,19 @@
+puredata (0.42.5-1) unstable; urgency=low
+
+  * New upstream release (closes: #473763)
+  * Adopt package (closes: #547030)
+  * Drop Build-Depends on libjack100.0-dev (closes: #527427)
+  * Package ships m_pd.h since 1999 (closes: #405488)
+  * debian/rules: switch from cdbs to debhelper
+  * debian/compat: bump to 7
+  * debian/puredata.preinst: remove ancient doc relocation
+  * debian/control: span Build-Depends on multiple lines
+  * debian/control: bump Standards-Version
+  * debian/control: bump to tcl/tk 8.5
+  * debian/install: updated doc/4 location
+
+ -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 02:58:17 +0100
+
 puredata (0.41.4-1) unstable; urgency=low
 
   * New upstream version

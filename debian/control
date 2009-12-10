@@ -1,9 +1,15 @@
 Source: puredata
 Section: sound
 Priority: optional
-Maintainer: Guenter Geiger (Debian/GNU) <geiger@debian.org>
-Build-Depends: cdbs, tcl8.4-dev, tk8.4-dev, libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386], debhelper, libjack0.100.0-dev | libjack-dev
-Standards-Version: 3.7.2
+Maintainer: Paul Brossier <piem@debian.org>
+Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>
+Build-Depends: debhelper (>= 7.0.50~),
+               tcl8.5-dev,
+               tk8.5-dev,
+               libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
+               debhelper,
+               libjack-dev
+Standards-Version: 3.8.3
 
 Package: puredata
 Architecture: any
