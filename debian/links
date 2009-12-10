@@ -5,3 +5,5 @@ usr/share/doc/puredata/4.data.structures  usr/lib/pd/doc/4.data.structures
 usr/share/doc/puredata/6.externs          usr/lib/pd/doc/6.externs
 usr/share/doc/puredata/7.stuff            usr/lib/pd/doc/7.stuff
 usr/share/doc/puredata/sound              usr/lib/pd/doc/sound
+usr/bin/pd                                usr/bin/puredata
+usr/share/man/man1/pd.1.gz                usr/share/man/man1/puredata.1.gz
