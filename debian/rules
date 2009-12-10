@@ -23,7 +23,9 @@ override_dh_auto_clean:
 	-$(RM) -rf bin/ src/config.log src/config.status src/makefile
 	dh clean --after dh_auto_clean
 
+override_dh_compress:
+	dh_compress -X.pd
+
 override_dh_auto_install:
 	dh install --after dh_auto_install
-	chmod 644 `find debian/puredata/usr/lib/pd/doc -type f`
 	chmod 755 debian/puredata/usr/lib/pd/bin/pd.tk
