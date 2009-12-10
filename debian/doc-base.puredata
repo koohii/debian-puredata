@@ -3,7 +3,7 @@ Title: PD Manual
 Author: Miller Puckette
 Abstract: This manual describes the usage of PD.
  PD is a realtime computer music system.
-Section: Apps/Sound
+Section: Sound
 
 Format: HTML
 Index: /usr/share/doc/puredata/1.manual/index.htm
