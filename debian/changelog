@@ -10,9 +10,10 @@ puredata (0.42.5-1) unstable; urgency=low
   * debian/control: span Build-Depends on multiple lines
   * debian/control: bump Standards-Version
   * debian/control: bump to tcl/tk 8.5
+  * debian/control: add ${misc:Depends}
   * debian/install: updated doc/4 location
 
- -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 02:58:17 +0100
+ -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 03:03:26 +0100
 
 puredata (0.41.4-1) unstable; urgency=low
 

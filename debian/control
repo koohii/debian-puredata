@@ -13,7 +13,7 @@ Standards-Version: 3.8.3
 
 Package: puredata
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Replaces: pd-externals, pd
 Provides: pd
 Conflicts: pd
