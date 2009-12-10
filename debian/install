@@ -4,7 +4,10 @@ bin/pdreceive usr/bin/
 bin/pd-gui usr/lib/pd/bin/
 bin/pd-watchdog usr/lib/pd/bin/
 bin/pd.tk usr/lib/pd/bin/
+doc/5.reference usr/lib/pd/doc/
 src/m_pd.h usr/include
 extra/*/*.pd_linux usr/lib/pd/extra
+extra/*-help.pd usr/lib/pd/doc/5.reference/
+extra/*/*-help.pd usr/lib/pd/doc/5.reference/
 debian/puredata.xpm usr/share/pixmaps
 debian/puredata.desktop usr/share/applications

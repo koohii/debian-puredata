@@ -12,15 +12,15 @@ puredata (0.42.5-1) unstable; urgency=low
   * debian/control: bump to tcl/tk 8.5
   * debian/control: add ${misc:Depends}
   * debian/install: updated doc/4 location
-  * debian/docs: move all documentation to /usr/share/doc/puredata, add
-    symlinks
+  * debian/docs: move most documentation to /usr/share/doc/puredata
+    except 5.reference for now
   * debian/rules: do not compress .pd, .wav, .aiff and .txt files
   * debian/puredata.desktop: remove obsolete encoding
   * debian/doc-base.puredata: remove top section Apps
   * debian/copyright: detail of different files
   * debian/rules: fix pd.tk permissions in dh_fixperms
 
- -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 03:58:53 +0100
+ -- Paul Brossier <piem@debian.org>  Thu, 10 Dec 2009 04:09:00 +0100
 
 puredata (0.41.4-1) unstable; urgency=low
 
