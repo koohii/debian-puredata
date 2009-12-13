@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Paul Brossier <piem@debian.org>
 Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>
 Build-Depends: debhelper (>= 7.0.50~),
+               quilt,
                tcl8.5-dev,
                tk8.5-dev,
                libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
