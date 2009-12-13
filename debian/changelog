@@ -1,4 +1,4 @@
-puredata (0.42.5-2) UNRELEASED; urgency=low
+puredata (0.42.5-2) unstable; urgency=low
 
   [Paul Brossier]
   * debian/control: add Build-Depends on quilt
@@ -12,7 +12,7 @@ puredata (0.42.5-2) UNRELEASED; urgency=low
   * debian/patches/02_kfreebsd.diff: added patch for kfreebsd (closes: #414414)
   * debian/patches/03_nostrip.diff: do not strip externals (closes: #437833)
 
- -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 20:05:11 +0100
+ -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 22:56:41 +0100
 
 puredata (0.42.5-1) unstable; urgency=low
 
