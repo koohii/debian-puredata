@@ -5,12 +5,13 @@ puredata (0.42.5-2) UNRELEASED; urgency=low
   * debian/rules: pass --with quilt to dh
   * debian/README.source: add reference to quilt documentation
   * debian/patches/01_big_endian.diff: fix FTBFS on big endian machines
+  * debian/control: add Vcs-Git and Vcs-Browser fields
 
   [IOhannes m Zmölnig]
   * debian/patches/02_kfreebsd.diff: added patch for kfreebsd (closes: #414414)
   * debian/patches/03_nostrip.diff: do not strip externals (closes: #437833)
 
- -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 19:09:07 +0100
+ -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 19:49:16 +0100
 
 puredata (0.42.5-1) unstable; urgency=low
 

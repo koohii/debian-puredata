@@ -11,6 +11,8 @@ Build-Depends: debhelper (>= 7.0.50~),
                debhelper,
                libjack-dev
 Standards-Version: 3.8.3
+Vcs-Git: git://git.debian.org/collab-maint/puredata.git
+Vcs-Browser: http://git.debian.org/?p=collab-maint/puredata.git;a=summary
 
 Package: puredata
 Architecture: any
