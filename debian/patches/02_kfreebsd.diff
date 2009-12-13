@@ -1,0 +1,209 @@
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/configure puredata-0.42.5.new/build-tree/pd-0.42-5/src/configure
+--- pd-0.42-5/src/configure	2009-05-07 22:33:33.000000000 +0200
++++ pd-0.42-5/src/configure	2009-11-14 10:48:46.000000000 +0100
+@@ -7061,7 +7061,7 @@
+ GUISRC=
+ fi
+ 
+-if test `uname -s` = Linux;
++if test `uname -s` = Linux -o `uname -s` = "GNU/kFreeBSD";
+ then
+         echo .................... alsa= $alsa
+     if test x$alsa = xyes; then
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/configure.in puredata-0.42.5.new/build-tree/pd-0.42-5/src/configure.in
+--- pd-0.42-5/src/configure.in	2008-12-10 19:30:53.000000000 +0100
++++ pd-0.42-5/src/configure.in	2009-11-14 10:48:46.000000000 +0100
+@@ -173,7 +173,7 @@
+ GUISRC=
+ fi
+ 
+-if test `uname -s` = Linux;
++if test `uname -s` = Linux -o `uname -s` = "GNU/kFreeBSD";
+ then
+     dnl Ckecking for ALSA
+     echo .................... alsa= $alsa
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/d_array.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/d_array.c
+--- pd-0.42-5/src/d_array.c	2008-12-10 19:30:53.000000000 +0100
++++ pd-0.42-5/src/d_array.c	2009-11-14 10:48:46.000000000 +0100
+@@ -514,7 +514,7 @@
+ #define int32 long
+ #endif
+ 
+-#if defined(__FreeBSD__) || defined(__APPLE__)
++#if defined(__FreeBSD__) || defined(__APPLE__) || defined(__FreeBSD_kernel__)
+ #include <machine/endian.h>
+ #endif
+ 
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/d_osc.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/d_osc.c
+--- pd-0.42-5/src/d_osc.c	2008-12-10 19:30:53.000000000 +0100
++++ pd-0.42-5/src/d_osc.c	2009-11-14 10:48:46.000000000 +0100
+@@ -26,7 +26,7 @@
+ #define int32 long
+ #endif
+ 
+-#if defined(__FreeBSD__) || defined(__APPLE__)
++#if defined(__FreeBSD__) || defined(__APPLE__) || defined(__FreeBSD_kernel__)
+ #include <machine/endian.h>
+ #endif
+ 
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/m_sched.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/m_sched.c
+--- pd-0.42-5/src/m_sched.c	2008-12-10 19:30:53.000000000 +0100
++++ pd-0.42-5/src/m_sched.c	2009-11-14 10:48:46.000000000 +0100
+@@ -272,7 +272,7 @@
+ 
+         /* if there's no GUI but we're running in "realtime", here is
+         where we arrange to ping the watchdog every 2 seconds. */
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD__)
+     if (sys_nogui && sys_hipriority && (sched_diddsp - sched_nextpingtime > 0))
+     {
+         glob_watchdog(0);
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/s_audio_oss.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/s_audio_oss.c
+--- pd-0.42-5/src/s_audio_oss.c	2008-12-11 17:29:02.000000000 +0100
++++ pd-0.42-5/src/s_audio_oss.c	2009-11-14 10:48:46.000000000 +0100
+@@ -5,7 +5,11 @@
+ 
+ /* this file inputs and outputs audio using the OSS API available on linux. */
+ 
++#if defined(__FreeBSD_kernel__)
++#include <sys/soundcard.h>
++#else
+ #include <linux/soundcard.h>
++#endif
+ 
+ #include "m_pd.h"
+ #include "s_stuff.h"
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/s_inter.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/s_inter.c
+--- pd-0.42-5/src/s_inter.c	2009-01-13 17:25:48.000000000 +0100
++++ pd-0.42-5/src/s_inter.c	2009-11-14 10:48:46.000000000 +0100
+@@ -62,7 +62,7 @@
+ #define WISHAPP "wish84.exe"
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD_kernel__)
+ #define LOCALHOST "127.0.0.1"
+ #else
+ #define LOCALHOST "localhost"
+@@ -267,7 +267,7 @@
+ 
+ #endif
+ 
+-#ifdef __linux
++#if defined(__linux) || defined(__FreeBSD_kernel__)
+ 
+ #if defined(_POSIX_PRIORITY_SCHEDULING) || defined(_POSIX_MEMLOCK)
+ #include <sched.h>
+@@ -839,7 +839,7 @@
+ 
+ static int sys_watchfd;
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD_kernel__)
+ void glob_watchdog(t_pd *dummy)
+ {
+     if (write(sys_watchfd, "\n", 1) < 1)
+@@ -1148,7 +1148,7 @@
+ #endif /* MSW */
+     }
+ 
+-#if defined(__linux__) || defined(IRIX)
++#if defined(__linux__) || defined(IRIX) || defined(__FreeBSD_kernel__)
+         /* now that we've spun off the child process we can promote
+         our process's priority, if we can and want to.  If not specfied
+         (-1), we check root status.  This misses the case where we might
+@@ -1258,7 +1258,7 @@
+              sys_socketreceiver);
+ 
+             /* here is where we start the pinging. */
+-#if defined(__linux__) || defined(IRIX)
++#if defined(__linux__) || defined(IRIX) || defined(__FreeBSD_kernel__)
+          if (sys_hipriority)
+              sys_gui("pdtk_watchdog\n");
+ #endif
+@@ -1282,7 +1282,7 @@
+     if (!reentered)
+     {
+         reentered = 1;
+-#ifndef __linux__  /* sys_close_audio() hangs if you're in a signal? */
++#if !defined(__linux__) && !defined(__FreeBSD_kernel__)  /* sys_close_audio() hangs if you're in a signal? */
+         fprintf(stderr, "closing audio...\n");
+         sys_close_audio();
+         fprintf(stderr, "closing MIDI...\n");
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/s_loader.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/s_loader.c
+--- pd-0.42-5/src/s_loader.c	2008-12-17 06:32:17.000000000 +0100
++++ pd-0.42-5/src/s_loader.c	2009-11-14 10:51:48.000000000 +0100
+@@ -38,22 +38,19 @@
+ 
+ #ifdef __FreeBSD__
+ static char sys_dllextent[] = ".b_i386", sys_dllextent2[] = ".pd_freebsd";
+-#endif
+-#ifdef __linux__
++#elif defined(__linux__) || defined(__FreeBSD_kernel__)
+ #ifdef __x86_64__
+ static char sys_dllextent[] = ".l_ia64", sys_dllextent2[] = ".pd_linux";
+ #else
+ static char sys_dllextent[] = ".l_i386", sys_dllextent2[] = ".pd_linux";
+ #endif
+-#endif
+-#ifdef __APPLE__
++#elif defined __APPLE__
+ #ifndef MACOSX3
+ static char sys_dllextent[] = ".d_fat", sys_dllextent2[] = ".pd_darwin";
+ #else
+ static char sys_dllextent[] = ".d_ppc", sys_dllextent2[] = ".pd_darwin";
+ #endif
+-#endif
+-#ifdef MSW
++#elif defined MSW
+ static char sys_dllextent[] = ".m_i386", sys_dllextent2[] = ".dll";
+ #endif
+ 
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/s_stuff.h puredata-0.42.5.new/build-tree/pd-0.42-5/src/s_stuff.h
+--- pd-0.42-5/src/s_stuff.h	2008-12-17 06:32:17.000000000 +0100
++++ pd-0.42-5/src/s_stuff.h	2009-11-14 10:48:46.000000000 +0100
+@@ -184,7 +184,7 @@
+ #define API_JACK 5
+ #define API_SGI 6
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD_kernel__)
+ #define API_DEFAULT API_OSS
+ #define API_DEFSTRING "OSS"
+ #endif
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/t_tkcmd.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/t_tkcmd.c
+--- pd-0.42-5/src/t_tkcmd.c	2009-01-06 00:27:00.000000000 +0100
++++ pd-0.42-5/src/t_tkcmd.c	2009-11-14 10:48:46.000000000 +0100
+@@ -46,7 +46,7 @@
+ #define STARTGUI
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD_kernel__)
+ #define STARTGUI
+ #endif
+ 
+@@ -67,7 +67,7 @@
+         the loopback address; NT, on the other hand, can't understand the
+         hostname "127.0.0.1". */
+ char hostname[100] =
+-#ifdef __linux__
++#if defined(__linux__) || defined(__FreeBSD_kernel__)
+     "127.0.0.1";
+ #else
+     "localhost";
+diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/x_misc.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/x_misc.c
+--- pd-0.42-5/src/x_misc.c	2008-12-10 19:30:53.000000000 +0100
++++ pd-0.42-5/src/x_misc.c	2009-11-14 10:48:46.000000000 +0100
+@@ -28,6 +28,11 @@
+ #define CLOCKHZ sysconf(_SC_CLK_TCK)
+ #endif
+ 
++#if defined (__FreeBSD_kernel__)
++#include <time.h>
++#define HZ CLOCKS_PER_SEC
++#endif
++
+ /* -------------------------- random ------------------------------ */
+ /* this is strictly homebrew and untested. */
+ 
