@@ -3,13 +3,14 @@ puredata (0.42.5-2) UNRELEASED; urgency=low
   [Paul Brossier]
   * debian/control: add Build-Depends on quilt
   * debian/rules: pass --with quilt to dh
+  * debian/README.source: add reference to quilt documentation
   * debian/patches/01_big_endian.diff: fix FTBFS on big endian machines
 
   [IOhannes m Zmölnig]
   * debian/patches/02_kfreebsd.diff: added patch for kfreebsd (closes: #414414)
   * debian/patches/03_nostrip.diff: do not strip externals (closes: #437833)
 
- -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 18:55:21 +0100
+ -- Paul Brossier <piem@debian.org>  Sun, 13 Dec 2009 19:09:07 +0100
 
 puredata (0.42.5-1) unstable; urgency=low
 
