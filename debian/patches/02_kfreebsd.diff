@@ -201,7 +201,7 @@ diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/x_misc.c 
  
 +#if defined (__FreeBSD_kernel__)
 +#include <time.h>
-+#define HZ CLOCKS_PER_SEC
++#define CLOCKHZ CLOCKS_PER_SEC
 +#endif
 +
  /* -------------------------- random ------------------------------ */
