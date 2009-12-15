@@ -1,27 +1,39 @@
-diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/configure puredata-0.42.5.new/build-tree/pd-0.42-5/src/configure
---- pd-0.42-5/src/configure	2009-05-07 22:33:33.000000000 +0200
-+++ pd-0.42-5/src/configure	2009-11-14 10:48:46.000000000 +0100
-@@ -7061,7 +7061,7 @@
+diff --git a/src/configure b/src/configure
+index 8c8275e..da86dde 100755
+--- a/src/configure
++++ b/src/configure
+@@ -7061,8 +7061,12 @@ else
  GUISRC=
  fi
  
 -if test `uname -s` = Linux;
 +if test `uname -s` = Linux -o `uname -s` = "GNU/kFreeBSD";
  then
++    if test `uname -s` = "GNU/kFreeBSD";
++    then
++	alsa="disabled"
++    fi
          echo .................... alsa= $alsa
      if test x$alsa = xyes; then
-diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/configure.in puredata-0.42.5.new/build-tree/pd-0.42-5/src/configure.in
---- pd-0.42-5/src/configure.in	2008-12-10 19:30:53.000000000 +0100
-+++ pd-0.42-5/src/configure.in	2009-11-14 10:48:46.000000000 +0100
-@@ -173,7 +173,7 @@
+	 echo "$as_me:$LINENO: checking for snd_pcm_info in -lasound" >&5
+diff --git a/src/configure.in b/src/configure.in
+index bc5d5f7..5953e30 100644
+--- a/src/configure.in
++++ b/src/configure.in
+@@ -173,8 +173,12 @@ else
  GUISRC=
  fi
  
 -if test `uname -s` = Linux;
 +if test `uname -s` = Linux -o `uname -s` = "GNU/kFreeBSD";
  then
++    if test `uname -s` = "GNU/kFreeBSD";
++    then
++	alsa="disabled"
++    fi
      dnl Ckecking for ALSA
      echo .................... alsa= $alsa
+ dnl This should be fixed so Pd can use ALSA shared libraries where appropriate.
 diff -Nur -x '*.orig' -x '*~' puredata-0.42.5/build-tree/pd-0.42-5/src/d_array.c puredata-0.42.5.new/build-tree/pd-0.42-5/src/d_array.c
 --- pd-0.42-5/src/d_array.c	2008-12-10 19:30:53.000000000 +0100
 +++ pd-0.42-5/src/d_array.c	2009-11-14 10:48:46.000000000 +0100
