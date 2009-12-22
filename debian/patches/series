@@ -1,3 +1,4 @@
 01_big_endian.diff
 02_kfreebsd.diff
 03_nostrip.diff
+04_hurd.diff
