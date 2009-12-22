@@ -11,6 +11,7 @@ Build-Depends: debhelper (>= 7.0.50~),
                debhelper,
                libjack-dev
 Standards-Version: 3.8.3
+Homepage: http://puredata.info
 Vcs-Git: git://git.debian.org/collab-maint/puredata.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/puredata.git;a=summary
 
@@ -22,9 +23,7 @@ Provides: pd
 Conflicts: pd
 Recommends: gem
 Description: realtime computer music and graphics system 
- A real-time graphical programming environment for audio and graphics
- analysis and rendering.  Pd's audio functions are built-in; graphical
- computations require a separate package named GEM ("Graphics Environment for
- Multimedia").  Pd and GEM are available for SGI machines, IBM PC compatibles
- (running NT or W95) and Linux (PCs or Alpha machines).
- 
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
