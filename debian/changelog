@@ -3,6 +3,8 @@ puredata (0.42.5-3) unstable; urgency=low
   * debian/control:
     - add community site to homepage field
     - improve long description
+    - remove Replaces and Conflicts fields
+    - add Suggests on pd-csound, pd-pdp, pd-zexy, pd-aubio
   * debian/rules: add per-arch configuration flags
   * debian/patches/02_kfreebsd.diff:
     - also define pd_tilde_dllextent on FreeBSD
@@ -11,7 +13,7 @@ puredata (0.42.5-3) unstable; urgency=low
   * debian/patches/04_hurd.diff:
     - add hurd glue and s_midi_dummy.c
 
- -- Paul Brossier <piem@debian.org>  Tue, 22 Dec 2009 20:40:55 +0100
+ -- Paul Brossier <piem@debian.org>  Tue, 22 Dec 2009 21:29:31 +0100
 
 puredata (0.42.5-2) unstable; urgency=low
 
