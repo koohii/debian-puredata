@@ -1,3 +1,18 @@
+puredata (0.42.5-3) unstable; urgency=low
+
+  * debian/control:
+    - add community site to homepage field
+    - improve long description
+  * debian/rules: add per-arch configuration flags
+  * debian/patches/02_kfreebsd.diff:
+    - also define pd_tilde_dllextent on FreeBSD
+    - fix typo (really closing #414414 this time)
+    - also add hurd glue
+  * debian/patches/04_hurd.diff:
+    - add hurd glue and s_midi_dummy.c
+
+ -- Paul Brossier <piem@debian.org>  Tue, 22 Dec 2009 20:40:55 +0100
+
 puredata (0.42.5-2) unstable; urgency=low
 
   [Paul Brossier]
