@@ -1,3 +1,11 @@
+puredata (0.42.6-1) unstable; urgency=low
+
+  * New upstream release
+  * bumped standards version to 3.8.4
+  * converted source format to "3.0 (quilt)"
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Fri, 23 Apr 2010 20:56:59 +0200
+
 puredata (0.42.5-3) unstable; urgency=low
 
   * debian/control:
