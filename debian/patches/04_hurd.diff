@@ -1,3 +1,5 @@
+Author: Paul Brossier <piem@piem.org>
+Description: add hurd glue
 diff --git a/src/d_array.c b/src/d_array.c
 index 11a55b5..b3b62f4 100644
 --- a/src/d_array.c

@@ -1,3 +1,5 @@
+Author: Paul Brossier <piem@piem.org>
+Description: kFreeBSD/hurd glue
 diff --git a/src/configure b/src/configure
 index 8c8275e..59acd7a 100755
 --- a/src/configure

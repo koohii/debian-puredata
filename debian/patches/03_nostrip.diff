@@ -1,3 +1,5 @@
+Author: Paul Brossier <piem@piem.org>
+Description: do not strip externals
 diff -Nur -x '*.orig' puredata-0.42.5/build-tree/pd-0.42-5/extra/makefile puredata-0.42.5.new/build-tree/pd-0.42-5/extra/makefile
 --- pd-0.42-5/extra/makefile	2008-12-10 19:30:53.000000000 +0100
 +++ pd-0.42-5/extra/makefile	2009-11-14 11:41:14.000000000 +0100
