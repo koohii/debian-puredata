@@ -2,3 +2,4 @@
 02_kfreebsd.diff
 03_nostrip.diff
 04_hurd.diff
+fix_strncpy_usage.patch
