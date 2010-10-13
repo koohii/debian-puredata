@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 7.0.50~),
                tk8.5-dev,
                libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
                libjack-dev
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1
 Homepage: http://puredata.info
 Vcs-Git: git://git.debian.org/collab-maint/puredata.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/puredata.git;a=summary
