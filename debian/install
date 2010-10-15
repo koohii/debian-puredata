@@ -8,6 +8,8 @@ doc/5.reference usr/lib/pd/doc/
 src/m_pd.h usr/include
 extra/*/*.pd_linux usr/lib/pd/extra
 extra/*-help.pd usr/lib/pd/doc/5.reference/
+extra/*.pd usr/lib/pd/extra
 extra/*/*-help.pd usr/lib/pd/doc/5.reference/
+extra/*/*.pd usr/lib/pd/extra
 debian/puredata.xpm usr/share/pixmaps
 debian/puredata.desktop usr/share/applications
