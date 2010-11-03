@@ -1,11 +1,11 @@
-puredata (0.42.6-2) UNRELEASED; urgency=low
+puredata (0.42.6-2) unstable; urgency=low
 
-  [ IOhannes m zm�lnig ]
+  [ IOhannes m zmölnig ]
   * fixed pdgui path evaluation (Closes:#596780)
   * added patch descriptions
   * bumped standards to 3.9.1
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Wed, 13 Oct 2010 10:34:41 +0200
+ -- Paul Brossier <piem@debian.org>  Wed, 03 Nov 2010 22:45:51 +0100
 
 puredata (0.42.6-1) unstable; urgency=low
 
