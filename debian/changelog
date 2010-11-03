@@ -1,11 +1,15 @@
 puredata (0.42.6-2) unstable; urgency=low
 
-  [ IOhannes m zmölnig ]
+  [IOhannes m zmölnig]
   * fixed pdgui path evaluation (Closes:#596780)
   * added patch descriptions
   * bumped standards to 3.9.1
+  * add missing extra abstractions (closes: #600209)
 
- -- Paul Brossier <piem@debian.org>  Wed, 03 Nov 2010 22:45:51 +0100
+  [Paul Brossier]
+  * review and add missing changelog entry
+
+ -- Paul Brossier <piem@debian.org>  Thu, 04 Nov 2010 00:02:51 +0100
 
 puredata (0.42.6-1) unstable; urgency=low
 
