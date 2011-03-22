@@ -5,11 +5,11 @@ Maintainer: Paul Brossier <piem@debian.org>
 Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>,
            IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>
 Build-Depends: debhelper (>= 7.0.50~),
-               quilt (>= 0.46-7~),
-               tcl8.5-dev,
-               tk8.5-dev,
-               libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
-               libjack-dev
+ quilt (>= 0.46-7~),
+ tcl8.5-dev,
+ tk8.5-dev,
+ libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
+ libjack-dev
 Standards-Version: 3.9.1
 Homepage: http://puredata.info
 Vcs-Git: git://git.debian.org/collab-maint/puredata.git
@@ -26,3 +26,4 @@ Description: realtime computer music and graphics system
  for audio and graphics processing. Pd's audio functions are built-in;
  graphical computations require separate packages such as gem (Graphics
  Environment for Multimedia) or pd-pdp (Pd Packet).
+
