@@ -9,7 +9,7 @@ that didn't really belong anywhere. */
 #include "s_stuff.h"
 #include "m_imp.h"
 #include "g_canvas.h"   /* for GUI queueing stuff */
-#ifndef MSW
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -47,6 +47,7 @@ typedef int socklen_t;
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <pthread.h>
+#include <glob.h>
 #else
 #include <stdlib.h>
 #endif
@@ -58,11 +59,15 @@ typedef int socklen_t;
 #define PDBINDIR "bin/"
 #endif
 
+#ifndef PDGUIDIR
+#define PDGUIDIR "tcl/"
+#endif
+
 #ifndef WISHAPP
 #define WISHAPP "wish84.exe"
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
 #define LOCALHOST "127.0.0.1"
 #else
 #define LOCALHOST "localhost"
@@ -88,7 +93,6 @@ struct _socketreceiver
     t_socketreceivefn sr_socketreceivefn;
 };
 
-extern char *pd_version;
 extern int sys_guisetportnumber;
 
 static int sys_nfdpoll;
@@ -99,10 +103,13 @@ static int sys_guisock;
 static t_binbuf *inbinbuf;
 static t_socketreceiver *sys_socketreceiver;
 extern int sys_addhist(int phase);
+void sys_set_searchpath(void);
+void sys_set_extrapath(void);
+void sys_set_startup(void);
 
 /* ----------- functions for timing, signals, priorities, etc  --------- */
 
-#ifdef MSW
+#ifdef _WIN32
 static LARGE_INTEGER nt_inittime;
 static double nt_freq = 0;
 
@@ -131,13 +138,13 @@ double nt_tixtotime(LARGE_INTEGER *dumbass)
     return (((double)(dumbass->QuadPart - nt_inittime.QuadPart)) / nt_freq);
 }
 #endif
-#endif /* MSW */
+#endif /* _WIN32 */
 
     /* get "real time" in seconds; take the
     first time we get called as a reference time of zero. */
 double sys_getrealtime(void)    
 {
-#ifndef MSW
+#ifndef _WIN32
     static struct timeval then;
     struct timeval now;
     gettimeofday(&now, 0);
@@ -169,7 +176,7 @@ static int sys_domicrosleep(int microsec, int pollem)
         FD_ZERO(&exceptset);
         for (fp = sys_fdpoll, i = sys_nfdpoll; i--; fp++)
             FD_SET(fp->fdp_fd, &readset);
-#ifdef MSW
+#ifdef _WIN32
         if (sys_maxfd == 0)
                 Sleep(microsec/1000);
         else
@@ -191,7 +198,7 @@ static int sys_domicrosleep(int microsec, int pollem)
     }
     else
     {
-#ifdef MSW
+#ifdef _WIN32
         if (sys_maxfd == 0)
               Sleep(microsec/1000);
         else
@@ -206,10 +213,8 @@ void sys_microsleep(int microsec)
     sys_domicrosleep(microsec, 1);
 }
 
-#ifdef UNISTD
-typedef void (*sighandler_t)(int);
-
-static void sys_signal(int signo, sighandler_t sigfun)
+#if !defined(_WIN32) && !defined(__CYGWIN__)
+static void sys_signal(int signo, sig_t sigfun)
 {
     struct sigaction action;
     action.sa_flags = 0;
@@ -265,9 +270,9 @@ void sys_setalarm(int microsec)
     setitimer(ITIMER_REAL, &gonzo, 0);
 }
 
-#endif
+#endif /* NOT _WIN32 && NOT __CYGWIN__ */
 
-#ifdef __linux
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
 
 #if defined(_POSIX_PRIORITY_SCHEDULING) || defined(_POSIX_MEMLOCK)
 #include <sched.h>
@@ -341,7 +346,7 @@ void sys_set_priority(int higher)
 
 void sys_sockerror(char *s)
 {
-#ifdef MSW
+#ifdef _WIN32
     int err = WSAGetLastError();
     if (err == 10054) return;
     else if (err == 10044)
@@ -554,10 +559,10 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
 
 void sys_closesocket(int fd)
 {
-#ifdef UNISTD
+#ifdef HAVE_UNISTD_H
     close(fd);
 #endif
-#ifdef MSW
+#ifdef _WIN32
     closesocket(fd);
 #endif
 }
@@ -839,7 +844,7 @@ int sys_pollgui(void)
 
 static int sys_watchfd;
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
 void glob_watchdog(t_pd *dummy)
 {
     if (write(sys_watchfd, "\n", 1) < 1)
@@ -858,7 +863,7 @@ static int defaultfontshit[MAXFONTS] = {
         24, 15, 28};
 #define NDEFAULTFONT (sizeof(defaultfontshit)/sizeof(*defaultfontshit))
 
-int sys_startgui(const char *guidir)
+int sys_startgui(const char *libdir)
 {
     pid_t childpid;
     char cmdbuf[4*MAXPDSTRING];
@@ -868,24 +873,25 @@ int sys_startgui(const char *guidir)
     int len = sizeof(server);
     int ntry = 0, portno = FIRSTPORTNUM;
     int xsock = -1;
-#ifdef MSW
+#ifdef _WIN32
     short version = MAKEWORD(2, 0);
     WSADATA nobby;
-#endif
-#ifdef UNISTD
+#else
     int stdinpipe[2];
-#endif
+#endif /* _WIN32 */
     /* create an empty FD poll list */
     sys_fdpoll = (t_fdpoll *)t_getbytes(0);
     sys_nfdpoll = 0;
     inbinbuf = binbuf_new();
 
-#ifdef UNISTD
+#if !defined(_WIN32) && !defined(__CYGWIN__)
     signal(SIGHUP, sys_huphandler);
     signal(SIGINT, sys_exithandler);
     signal(SIGQUIT, sys_exithandler);
     signal(SIGILL, sys_exithandler);
+# ifdef SIGIOT
     signal(SIGIOT, sys_exithandler);
+# endif
     signal(SIGFPE, SIG_IGN);
     /* signal(SIGILL, sys_exithandler);
     signal(SIGBUS, sys_exithandler);
@@ -895,10 +901,11 @@ int sys_startgui(const char *guidir)
 #if 0  /* GG says: don't use that */
     signal(SIGSTKFLT, sys_exithandler);
 #endif
-#endif
-#ifdef MSW
+#endif /* NOT _WIN32 && NOT __CYGWIN__ */
+
+#ifdef _WIN32
     if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
-#endif
+#endif /* _WIN32 */
 
     if (sys_nogui)
     {
@@ -906,11 +913,10 @@ int sys_startgui(const char *guidir)
             skip starting the GUI up. */
         t_atom zz[NDEFAULTFONT+2];
         int i;
-#ifdef MSW
+#ifdef _WIN32
         if (GetCurrentDirectory(MAXPDSTRING, cmdbuf) == 0)
             strcpy(cmdbuf, ".");
-#endif
-#ifdef UNISTD
+#else
         if (!getcwd(cmdbuf, MAXPDSTRING))
             strcpy(cmdbuf, ".");
         
@@ -956,12 +962,9 @@ int sys_startgui(const char *guidir)
     }
     else    /* default behavior: start up the GUI ourselves. */
     {
-#ifdef MSW
+#ifdef _WIN32
         char scriptbuf[MAXPDSTRING+30], wishbuf[MAXPDSTRING+30], portbuf[80];
         int spawnret;
-
-#endif
-#ifdef MSW
         char intarg;
 #else
         int intarg;
@@ -983,7 +986,7 @@ int sys_startgui(const char *guidir)
         intarg = 1;
         if (setsockopt(xsock, IPPROTO_TCP, TCP_NODELAY,
             &intarg, sizeof(intarg)) < 0)
-#ifndef MSW
+#ifndef _WIN32
                 post("setsockopt (TCP_NODELAY) failed\n")
 #endif
                     ;
@@ -998,7 +1001,7 @@ int sys_startgui(const char *guidir)
         /* name the socket */
         while (bind(xsock, (struct sockaddr *)&server, sizeof(server)) < 0)
         {
-#ifdef MSW
+#ifdef _WIN32
             int err = WSAGetLastError();
 #else
             int err = errno;
@@ -1019,69 +1022,52 @@ int sys_startgui(const char *guidir)
         if (sys_verbose) fprintf(stderr, "port %d\n", portno);
 
 
-#ifdef UNISTD
+#ifndef _WIN32
         if (!sys_guicmd)
         {
 #ifdef __APPLE__
-            char *homedir = getenv("HOME"), filename[250];
+            int i;
             struct stat statbuf;
-                /* first look for Wish bundled with and renamed "Pd" */
-            sprintf(filename, "%s/../../MacOS/Pd", guidir);
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            if (!homedir || strlen(homedir) > 150)
-                goto nohomedir;
-                /* Look for Wish in user's Applications.  Might or might
-                not be names "Wish Shell", and might or might not be
-                in "Utilities" subdir. */
-            sprintf(filename,
-                "%s/Applications/Utilities/Wish shell.app/Contents/MacOS/Wish Shell",
-                    homedir);
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            sprintf(filename,
-                "%s/Applications/Utilities/Wish.app/Contents/MacOS/Wish",
-                    homedir);
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            sprintf(filename,
-                "%s/Applications/Wish shell.app/Contents/MacOS/Wish Shell",
-                    homedir);
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            sprintf(filename,
-                "%s/Applications/Wish.app/Contents/MacOS/Wish",
-                    homedir);
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-        nohomedir:
-                /* Perform the same search among system applications. */
-            strcpy(filename, 
-                "/usr/bin/wish");
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            strcpy(filename, 
-                "/Applications/Utilities/Wish Shell.app/Contents/MacOS/Wish Shell");
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            strcpy(filename, 
-                "/Applications/Utilities/Wish.app/Contents/MacOS/Wish");
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            strcpy(filename, 
-                "/Applications/Wish Shell.app/Contents/MacOS/Wish Shell");
-            if (stat(filename, &statbuf) >= 0)
-                goto foundit;
-            strcpy(filename, 
-                "/Applications/Wish.app/Contents/MacOS/Wish");
-        foundit:
-            sprintf(cmdbuf, "\"%s\" %s/pd.tk %d\n", filename, guidir, portno);
-#else
+            glob_t glob_buffer;
+            char *homedir = getenv("HOME");
+            char embed_glob[FILENAME_MAX];
+            char embed_filename[FILENAME_MAX], home_filename[FILENAME_MAX];
+            char *wish_paths[10] = {
+                "(did not find an embedded wish)",
+                "(did not find a home directory)",
+                "/Applications/Utilities/Wish.app/Contents/MacOS/Wish",
+                "/Applications/Utilities/Wish Shell.app/Contents/MacOS/Wish Shell",
+                "/Applications/Wish.app/Contents/MacOS/Wish",
+                "/Applications/Wish Shell.app/Contents/MacOS/Wish Shell",
+                "/usr/bin/wish"
+            };
+            /* this glob is needed so the Wish executable can have the same
+             * filename as the Pd.app, i.e. 'Pd-0.42-3.app' should have a Wish
+             * executable called 'Pd-0.42-3.app/Contents/MacOS/Pd-0.42-3' */
+            sprintf(embed_glob, "%s/../MacOS/Pd*", libdir);
+            glob_buffer.gl_matchc = 1; /* we only need one match */
+            glob(embed_glob, GLOB_LIMIT, NULL, &glob_buffer);
+            if (glob_buffer.gl_pathc > 0) {
+                strcpy(embed_filename, glob_buffer.gl_pathv[0]);
+                wish_paths[0] = embed_filename;
+            }
+            sprintf(home_filename,
+                    "%s/Applications/Wish.app/Contents/MacOS/Wish",homedir);
+            wish_paths[1] = home_filename;
+            for(i=0; i<10; i++)
+            {
+                if (sys_verbose)
+                    fprintf(stderr, "Trying Wish at \"%s\"\n", wish_paths[i]);
+                if (stat(wish_paths[i], &statbuf) >= 0)
+                    break;
+            }
+            sprintf(cmdbuf,"\"%s\" %d\n", wish_paths[i], portno);
+#else /* __APPLE__ */
             sprintf(cmdbuf,
-                "TCL_LIBRARY=\"%s/tcl/library\" TK_LIBRARY=\"%s/tk/library\" \
-                 \"%s/pd-gui\" %d\n",
-                 sys_libdir->s_name, sys_libdir->s_name, guidir, portno);
-#endif
+  "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\" \
+  wish \"%s/" PDGUIDIR "/pd-gui.tcl\" %d\n",
+                 libdir, libdir, libdir, portno);
+#endif /* __APPLE__ */
             sys_guicmd = cmdbuf;
         }
 
@@ -1099,6 +1085,7 @@ int sys_startgui(const char *guidir)
         {
             setuid(getuid());          /* lose setuid priveliges */
 #ifndef __APPLE__
+// TODO this seems unneeded on any platform hans@eds.org
                 /* the wish process in Unix will make a wish shell and
                     read/write standard in and out unless we close the
                     file descriptors.  Somehow this doesn't make the MAC OSX
@@ -1114,26 +1101,22 @@ int sys_startgui(const char *guidir)
                     close(stdinpipe[0]);
                 }
             }
-#endif
+#endif /* NOT __APPLE__ */
             execl("/bin/sh", "sh", "-c", sys_guicmd, (char*)0);
             perror("pd: exec");
             _exit(1);
        }
-#endif /* UNISTD */
-
-#ifdef MSW
-            /* in MSW land "guipath" is unused; we just do everything from
-            the libdir. */
-        /* fprintf(stderr, "%s\n", sys_libdir->s_name); */
+#else /* NOT _WIN32 */
+        /* fprintf(stderr, "%s\n", libdir); */
         
         strcpy(scriptbuf, "\"");
-        strcat(scriptbuf, sys_libdir->s_name);
-        strcat(scriptbuf, "/" PDBINDIR "pd.tk\"");
+        strcat(scriptbuf, libdir);
+        strcat(scriptbuf, "/" PDGUIDIR "pd-gui.tcl\"");
         sys_bashfilename(scriptbuf, scriptbuf);
         
                 sprintf(portbuf, "%d", portno);
 
-        strcpy(wishbuf, sys_libdir->s_name);
+        strcpy(wishbuf, libdir);
         strcat(wishbuf, "/" PDBINDIR WISHAPP);
         sys_bashfilename(wishbuf, wishbuf);
         
@@ -1145,18 +1128,23 @@ int sys_startgui(const char *guidir)
             exit(1);
         }
 
-#endif /* MSW */
+#endif /* NOT _WIN32 */
     }
 
-#if defined(__linux__) || defined(IRIX)
+#if defined(__linux__) || defined(IRIX) || defined(__FreeBSD_kernel__)
         /* now that we've spun off the child process we can promote
         our process's priority, if we can and want to.  If not specfied
-        (-1), we check root status.  This misses the case where we might
-        have permission from a "security module" (linux 2.6) -- I don't
-        know how to test for that.  The "-rt" flag must b eset in that
-        case. */
+        (-1), we assume real-time was wanted.  Afterward, just in case
+        someone made Pd setuid in order to get permission to do this,
+        unset setuid and lose root priveliges after doing this.  Starting
+        in Linux 2.6 this is accomplished by putting lines like:
+                @audio - rtprio 99
+                @audio - memlock unlimited
+        in the system limits file, perhaps /etc/limits.conf or
+        /etc/security/limits.conf */
+        fprintf(stderr, "was... %d\n", sys_hipriority);
     if (sys_hipriority == -1)
-        sys_hipriority = (!getuid() || !geteuid());
+        sys_hipriority = 1;
     
     if (sys_hipriority)
     {
@@ -1197,7 +1185,7 @@ int sys_startgui(const char *guidir)
             }
             close(pipe9[1]);
 
-            sprintf(cmdbuf, "%s/pd-watchdog\n", guidir);
+            sprintf(cmdbuf, "%s/bin/pd-watchdog\n", libdir);
             if (sys_verbose) fprintf(stderr, "%s", cmdbuf);
             execl("/bin/sh", "sh", "-c", cmdbuf, (char*)0);
             perror("pd: exec");
@@ -1217,7 +1205,7 @@ int sys_startgui(const char *guidir)
     setuid(getuid());          /* lose setuid priveliges */
 #endif /* __linux__ */
 
-#ifdef MSW
+#ifdef _WIN32
     if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
         fprintf(stderr, "pd: couldn't set high priority class\n");
 #endif
@@ -1258,14 +1246,20 @@ int sys_startgui(const char *guidir)
              sys_socketreceiver);
 
             /* here is where we start the pinging. */
-#if defined(__linux__) || defined(IRIX)
+#if defined(__linux__) || defined(IRIX) || defined(__FreeBSD_kernel__)
          if (sys_hipriority)
              sys_gui("pdtk_watchdog\n");
 #endif
          sys_get_audio_apis(buf);
          sys_get_midi_apis(buf2);
-         sys_vgui("pdtk_pd_startup {%s} %s %s {%s} %s\n", pd_version, buf, buf2, 
-                  sys_font, sys_fontweight); 
+         sys_set_searchpath();     /* tell GUI about path and startup flags */
+         sys_set_extrapath();
+         sys_set_startup();
+                            /* ... and about font, medio APIS, etc */
+         sys_vgui("pdtk_pd_startup %d %d %d {%s} %s %s {%s} %s\n",
+                  PD_MAJOR_VERSION, PD_MINOR_VERSION, 
+                  PD_BUGFIX_VERSION, PD_TEST_VERSION,
+                  buf, buf2, sys_font, sys_fontweight); 
     }
     return (0);
 
@@ -1282,7 +1276,7 @@ void sys_bail(int n)
     if (!reentered)
     {
         reentered = 1;
-#ifndef __linux__  /* sys_close_audio() hangs if you're in a signal? */
+#if !defined(__linux__) && !defined(__FreeBSD_kernel__) && !defined(__GNU__) /* sys_close_audio() hangs if you're in a signal? */
         fprintf(stderr, "closing audio...\n");
         sys_close_audio();
         fprintf(stderr, "closing MIDI...\n");

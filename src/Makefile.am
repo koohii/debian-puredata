@@ -11,7 +11,7 @@ INCLUDES = @INCLUDES@
 
 SUFFIXES = .@EXTENSION@ .@SHARED_LIB@
 
-bin_PROGRAMS = pd pdsend pdreceive pd-watchdog
+bin_PROGRAMS = pd pdsend pdreceive
 pdsend_SOURCES = u_pdsend.c
 pdreceive_SOURCES = u_pdreceive.c
 pd_watchdog_SOURCES = s_watchdog.c
@@ -24,26 +24,21 @@ pd_SOURCES = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c \
     m_conf.c m_glob.c m_sched.c \
     s_main.c s_inter.c s_file.c s_print.c \
     s_loader.c s_path.c s_entry.c s_audio.c s_midi.c \
+    s_utf8.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
     d_math.c d_fft.c d_array.c d_global.c \
     d_delay.c d_resample.c \
     x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
     x_time.c x_acoustics.c x_net.c x_qlist.c x_gui.c x_list.c d_soundfile.c
 
-TCL_FILES = AppMain.tcl apple_events.tcl dialog_array.tcl dialog_audio.tcl \
-	dialog_canvas.tcl dialog_data.tcl dialog_find.tcl dialog_font.tcl \
-	dialog_gatom.tcl dialog_iemgui.tcl dialog_message.tcl dialog_midi.tcl \
-	dialog_path.tcl dialog_startup.tcl helpbrowser.tcl opt_parser.tcl \
-	pd-gui.tcl pd_bindings.tcl pd_connect.tcl pd_menucommands.tcl pd_menus.tcl \
-	pdtk_canvas.tcl pdtk_text.tcl pdwindow.tcl pkgIndex.tcl scrollbox.tcl \
-	scrollboxwindow.tcl wheredoesthisgo.tcl
-
-include_HEADERS = m_pd.h m_imp.h g_canvas.h s_stuff.h
-noinst_HEADERS = g_all_guis.h s_audio_alsa.h s_audio_pablio.h s_audio_paring.h
-
+pd_includedir = ${includedir}/pd
+pd_include_HEADERS = m_pd.h m_imp.h g_canvas.h s_stuff.h g_all_guis.h
+# compatibility: m_pd.h also goes into ${includedir}/
+include_HEADERS = m_pd.h
+noinst_HEADERS = g_all_guis.h s_audio_alsa.h s_audio_paring.h s_utf8.h
 
 # we want these in the dist tarball
-EXTRA_DIST = CHANGELOG.txt notes.txt makefile.mingw $(TCL_FILES)
+EXTRA_DIST = CHANGELOG.txt notes.txt makefile.mingw
 
 # configurations per library
 if ALSA
@@ -77,7 +72,7 @@ endif
 # handle a single MIDI API
 if OSS
 if !WINDOWS
-pd_CFLAGS += -DUSEAPI_OSS -DUNIX
+pd_CFLAGS += -DUSEAPI_OSS
 pd_SOURCES += s_audio_oss.c s_midi_oss.c
 endif
 endif
@@ -85,7 +80,7 @@ endif
 if PORTAUDIO
 pd_CFLAGS += -DUSEAPI_PORTAUDIO  -I../portaudio/include
 pd_LDADD += ../portaudio/libportaudio.la
-pd_SOURCES += s_audio_pa.c s_audio_pablio.c s_audio_paring.c
+pd_SOURCES += s_audio_pa.c s_audio_paring.c
 endif
 
 # ASIO needs to go after PORTAUDIO in order for it to link properly
@@ -99,19 +94,24 @@ pd_LDADD += ../portmidi/libportmidi.la
 pd_SOURCES += s_midi_pm.c
 endif
 
+
+# FIXXXME
+# GNU/HURD, IPHONEOS, ... have no MIDI (not even OSS)
+#  i think it would be better to add s_midi_dummy.c only if no other midi API can be found
+#  (without OS-specific checks)
+# even better would be, to allow Pd to have simply have no MIDI (nor AUDIO)
 if IPHONEOS
 pd_SOURCES += s_midi_dummy.c
 endif
 
-if LINUX 
-# kludge, should use auto macros like __linux__. The UNIX macro seems
-# to mean "things that have been implemented with GNU/Linux in mind, but the
-# watchdog should work on Mac OS X and Cygwin, and OSS can work on FreeBSD,
-# Cygwin, etc.
-pd_CFLAGS += -DUNIX 
+if HURD
+pd_SOURCES += s_midi_dummy.c
+endif
 
+if LINUX 
 libpdbindir = $(pkglibdir)/bin
-libpdbin_DATA = $(TCL_FILES)
+libpdbin_DATA = 
+libpdbin_PROGRAMS = pd-watchdog pd
 # this flag has to have a single leading "-" for libtool, even though ld uses
 # --export-dynamic, and libtool sends -Wl,--export-dynamic to ld...
 pd_LDFLAGS += -export-dynamic
@@ -122,14 +122,15 @@ endif
 if MACOSX
 LIBS += -framework Carbon
 pd_CFLAGS += -DMACOSX #kludge, should use auto macro __APPLE__
-bin_SCRIPTS = $(TCL_FILES)
+bin_SCRIPTS = 
+bin_PROGRAMS += pd-watchdog
 endif
 
 if WINDOWS
 LIBS += -lwsock32 -lwinmm -lole32
 pd_CFLAGS +=  -DUSEAPI_MMIO -DPD_INTERNAL
 pd_SOURCES += s_audio_mmio.c s_midi_mmio.c
-bin_SCRIPTS = $(TCL_FILES)
+bin_SCRIPTS = 
 endif
 
 # Cygwin is not _WIN32 and MSW vaguely means the same thing, so MINGW only
@@ -137,6 +138,7 @@ if MINGW
 pd_CFLAGS += -DWISHAPP='"wish85.exe"' -DMSW #kludge, MSW should be _WIN32
 pdsend_CFLAGS += -DMSW #kludge, should use _WIN32
 pdreceive_CFLAGS += -DMSW #kludge, should use _WIN32
+bin_PROGRAMS += pd-watchdog
 endif
 
 etags: TAGS
