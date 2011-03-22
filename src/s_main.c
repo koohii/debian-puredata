@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#ifdef UNISTD
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #ifdef MSW
@@ -25,7 +25,11 @@
 #define snprintf sprintf_s
 #endif
 
-char *pd_version;
+       
+#define stringify(s) str(s)
+#define str(s) #s
+ 
+char *pd_version = "Pd-" stringify(PD_MAJOR_VERSION) "." stringify(PD_MINOR_VERSION) "." stringify(PD_BUGFIX_VERSION) " (" stringify(PD_TEST_VERSION) ")";
 char pd_compiletime[] = __TIME__;
 char pd_compiledate[] = __DATE__;
 
@@ -51,7 +55,6 @@ int sys_nosleep = 0;  /* skip all "sleep" calls and spin instead */
 
 char *sys_guicmd;
 t_symbol *sys_libdir;
-t_symbol *sys_guidir;
 static t_namelist *sys_openlist;
 static t_namelist *sys_messagelist;
 static int sys_version;
@@ -62,16 +65,17 @@ int sys_nmidiin = -1;
 int sys_midiindevlist[MAXMIDIINDEV] = {1};
 int sys_midioutdevlist[MAXMIDIOUTDEV] = {1};
 
-char sys_font[100] = 
-#ifdef MSW
-    "Courier";
+#ifdef __APPLE__
+char sys_font[100] = "Monaco";
+char sys_fontweight[10] = "normal";
 #else
-    "Courier";
+char sys_font[100] = "Courier";
+char sys_fontweight[10] = "bold";
 #endif
-char sys_fontweight[] = "bold  "; /* currently only used for iemguis */
 static int sys_main_srate;
 static int sys_main_advance;
 static int sys_main_callback;
+static int sys_main_blocksize;
 static int sys_listplease;
 
 int sys_externalschedlib;
@@ -259,15 +263,6 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 static void sys_afterargparse(void);
 
-static void pd_makeversion(void)
-{
-    char foo[100];
-    sprintf(foo,  "Pd version %d.%d-%d%s\n",PD_MAJOR_VERSION,
-        PD_MINOR_VERSION,PD_BUGFIX_VERSION,PD_TEST_VERSION);
-    pd_version = malloc(strlen(foo)+1);
-    strcpy(pd_version, foo);
-}
-
 /* this is called from main() in s_entry.c */
 int sys_main(int argc, char **argv)
 {
@@ -291,13 +286,11 @@ int sys_main(int argc, char **argv)
     if (sys_argparse(argc-1, argv+1))           /* parse cmd line */
         return (1);
     sys_afterargparse();                    /* post-argparse settings */
-        /* build version string from defines in m_pd.h */
-    pd_makeversion();
-    if (sys_verbose || sys_version) fprintf(stderr, "%scompiled %s %s\n",
+    if (sys_verbose || sys_version) fprintf(stderr, "%s compiled %s %s\n",
         pd_version, pd_compiletime, pd_compiledate);
     if (sys_version)    /* if we were just asked our version, exit here. */
         return (0);
-    if (sys_startgui(sys_guidir->s_name))       /* start the gui */
+    if (sys_startgui(sys_libdir->s_name))       /* start the gui */
         return(1);
     if (sys_externalschedlib)
         return (sys_run_scheduler(sys_externalschedlibname,
@@ -357,6 +350,15 @@ static char *(usagemessage[]) = {
 #ifdef USEAPI_MMIO
 "-mmio            -- use MMIO audio API (default for Windows)\n",
 #endif
+
+#ifdef USEAPI_AUDIOUNIT
+"-audiounit       -- use Apple AudioUnit API\n",
+#endif
+
+#ifdef USEAPI_ESD
+"-esd             -- use Enlightenment Sound Daemon (ESD) API\n",
+#endif
+
 "      (default audio API for this platform:  ", API_DEFSTRING, ")\n\n",
 
 "\nMIDI configuration flags:\n",
@@ -391,7 +393,7 @@ static char *(usagemessage[]) = {
 "-guicmd \"cmd...\" -- start alternatve GUI program (e.g., remote via ssh)\n",
 "-send \"msg...\"   -- send a message at startup, after patches are loaded\n",
 "-noprefs         -- suppress loading preferences on startup\n",
-#ifdef UNISTD
+#ifdef HAVE_UNISTD_H
 "-rt or -realtime -- use real-time priority\n",
 "-nrt             -- don't use real-time priority\n",
 #endif
@@ -441,20 +443,19 @@ void sys_findprogdir(char *progname)
 {
     char sbuf[MAXPDSTRING], sbuf2[MAXPDSTRING], *sp;
     char *lastslash; 
-#ifdef UNISTD
+#ifndef _WIN32
     struct stat statbuf;
-#endif
+#endif /* NOT _WIN32 */
 
     /* find out by what string Pd was invoked; put answer in "sbuf". */
-#ifdef MSW
+#ifdef _WIN32
     GetModuleFileName(NULL, sbuf2, sizeof(sbuf2));
     sbuf2[MAXPDSTRING-1] = 0;
     sys_unbashfilename(sbuf2, sbuf);
-#endif /* MSW */
-#ifdef UNISTD
+#else
     strncpy(sbuf, progname, MAXPDSTRING);
     sbuf[MAXPDSTRING-1] = 0;
-#endif
+#endif /* _WIN32 */
     lastslash = strrchr(sbuf, '/');
     if (lastslash)
     {
@@ -483,22 +484,23 @@ void sys_findprogdir(char *progname)
         pd was found in.  We now want to infer the "lib" directory and the
         "gui" directory.  In "simple" unix installations, the layout is
             .../bin/pd
-            .../bin/pd-gui
+            .../bin/pd-watchdog (etc)
+            .../bin/pd-gui.tcl
             .../doc
         and in "complicated" unix installations, it's:
             .../bin/pd
-            .../lib/pd/bin/pd-gui
+            .../lib/pd/bin/pd-watchdog
+            .../lib/pd/bin/pd-gui.tcl
             .../lib/pd/doc
         To decide which, we stat .../lib/pd; if that exists, we assume it's
         the complicated layout.  In MSW, it's the "simple" layout, but
-        the gui program is straight wish80:
+        "wish" is found in bin:
             .../bin/pd
             .../bin/wish80.exe
             .../doc
         */
 #ifdef MSW
     sys_libdir = gensym(sbuf2);
-    sys_guidir = &s_;   /* in MSW the guipath just depends on the libdir */
 #else
     strncpy(sbuf, sbuf2, MAXPDSTRING-30);
     sbuf[MAXPDSTRING-30] = 0;
@@ -507,21 +509,11 @@ void sys_findprogdir(char *progname)
     {
             /* complicated layout: lib dir is the one we just stat-ed above */
         sys_libdir = gensym(sbuf);
-            /* gui lives in .../lib/pd/bin */
-        strncpy(sbuf, sbuf2, MAXPDSTRING-30);
-        sbuf[MAXPDSTRING-30] = 0;
-        strcat(sbuf, "/lib/pd/bin");
-        sys_guidir = gensym(sbuf);
     }
     else
     {
             /* simple layout: lib dir is the parent */
         sys_libdir = gensym(sbuf2);
-            /* gui lives in .../bin */
-        strncpy(sbuf, sbuf2, MAXPDSTRING-30);
-        sbuf[MAXPDSTRING-30] = 0;
-        strcat(sbuf, "/bin");
-        sys_guidir = gensym(sbuf);
     }
 #endif
 }
@@ -588,7 +580,7 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-blocksize"))
         {
-            sys_setblocksize(atoi(argv[1]));
+            sys_main_blocksize = atoi(argv[1]);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-sleepgrain") && (argc > 1))
@@ -664,6 +656,20 @@ int sys_argparse(int argc, char **argv)
         {
             sys_set_audio_api(API_MMIO);
             sys_mmio = 1;
+            argc--; argv++;
+        }
+#endif
+#ifdef USEAPI_AUDIOUNIT
+        else if (!strcmp(*argv, "-audiounit"))
+        {
+            sys_set_audio_api(API_AUDIOUNIT);
+            argc--; argv++;
+        }
+#endif
+#ifdef USEAPI_ESD
+        else if (!strcmp(*argv, "-esd"))
+        {
+            sys_set_audio_api(API_ESD);
             argc--; argv++;
         }
 #endif
@@ -839,7 +845,7 @@ int sys_argparse(int argc, char **argv)
             sys_noautopatch = 1;
             argc--; argv++;
         }
-#ifdef UNISTD
+#ifdef HAVE_UNISTD_H
         else if (!strcmp(*argv, "-rt") || !strcmp(*argv, "-realtime"))
         {
             sys_hipriority = 1;
@@ -919,7 +925,7 @@ static void sys_afterargparse(void)
     int i;
     int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
     int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
-    int nchindev, nchoutdev, rate, advance, callback;
+    int nchindev, nchoutdev, rate, advance, callback, blocksize;
     int nmidiindev = 0, midiindev[MAXMIDIINDEV];
     int nmidioutdev = 0, midioutdev[MAXMIDIOUTDEV];
             /* add "extra" library to path */
@@ -955,7 +961,8 @@ static void sys_afterargparse(void)
             else are the default.  Overwrite them with any results
             of argument parsing, and store them again. */
     sys_get_audio_params(&naudioindev, audioindev, chindev,
-        &naudiooutdev, audiooutdev, choutdev, &rate, &advance, &callback);
+        &naudiooutdev, audiooutdev, choutdev, &rate, &advance,
+            &callback, &blocksize);
     if (sys_nchin >= 0)
     {
         nchindev = sys_nchin;
@@ -1003,9 +1010,11 @@ static void sys_afterargparse(void)
         rate = sys_main_srate;
     if (sys_main_callback)
         callback = sys_main_callback;
+    if (sys_main_blocksize)
+        blocksize = sys_main_blocksize;
     sys_set_audio_settings(naudioindev, audioindev, nchindev, chindev,
         naudiooutdev, audiooutdev, nchoutdev, choutdev, rate, advance, 
-        callback);
+        callback, blocksize);
     sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 0);
 }
 

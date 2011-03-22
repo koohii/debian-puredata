@@ -1,3 +1,8 @@
+# On Mac OS X, this needs to be defined to enable dlopen and weak linking
+# support.  Its safe on other platforms since gcc only checks this env var on
+# Apple's gcc.  <hans@at.or.at>
+export MACOSX_DEPLOYMENT_TARGET = 10.3
+
 VPATH = ../obj:./
 OBJ_DIR = ../obj
 BIN_DIR = ../bin
@@ -50,6 +55,7 @@ SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     m_conf.c m_glob.c m_sched.c \
     s_main.c s_inter.c s_file.c s_print.c \
     s_loader.c s_path.c s_entry.c s_audio.c s_midi.c \
+    s_utf8.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
     d_math.c d_fft.c d_array.c d_global.c \
     d_delay.c d_resample.c \
@@ -58,10 +64,6 @@ SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     $(SYSSRC)
 
 OBJ = $(SRC:.c=.o) 
-
-GSRC =  @GUISRC@
-
-GOBJ = $(GSRC:.c=.o)
 
 # get version from m_pd.h to use in doc/1.manual/1.introduction.txt
 PD_MAJOR_VERSION := $(shell grep PD_MAJOR_VERSION m_pd.h | \
@@ -84,10 +86,10 @@ endif
 .PHONY: pd gui externs all
 
 all: pd $(BIN_DIR)/pd-watchdog gui $(BIN_DIR)/pdsend \
-    $(BIN_DIR)/pdreceive  $(BIN_DIR)/pd.tk externs
+    $(BIN_DIR)/pdreceive externs
 
 bin: pd $(BIN_DIR)/pd-watchdog gui $(BIN_DIR)/pdsend \
-    $(BIN_DIR)/pdreceive  $(BIN_DIR)/pd.tk
+    $(BIN_DIR)/pdreceive
 
 $(OBJ) : %.o : %.c
 	$(CC) $(CFLAGS) $(GFLAGS) $(INCLUDE) -c -o $(OBJ_DIR)/$*.o $*.c 
@@ -99,12 +101,6 @@ $(ASIOOBJ): %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDE) -c -o $(OBJ_DIR)/$*.o $*.cpp
 
 pd: $(PDEXEC)
-
-ifneq ($(GSRC),)
-gui: $(BIN_DIR)/$(GUINAME)
-else
-gui:
-endif
 
 pd-watchdog: $(BIN_DIR)/pd-watchdog
 
@@ -123,14 +119,7 @@ $(BIN_DIR)/pdreceive: u_pdreceive.c $(BIN_DIR)
 $(PDEXEC): $(OBJ) $(BIN_DIR)
 	cd ../obj;  $(CC) $(LDFLAGS) $(DBG_CFLAGS) -o $(PDEXEC) $(OBJ) $(LIB)
 
-$(BIN_DIR)/pd-gui: $(GOBJ) $(GSRC)
-	cd ../obj; $(CC) $(INCLUDE) -o $(BIN_DIR)/$(GUINAME) $(GOBJ) $(GLIB)
-
-$(BIN_DIR)/pd.tk: u_main.tk $(BIN_DIR)
-	cp u_main.tk $(BIN_DIR)/pd.tk
-	touch -r makefile.dependencies $(BIN_DIR)
-
-#this is for Max OSX only...
+#this is for Mac OSX only...
 $(BIN_DIR)/libPdTcl.dylib: $(GOBJ) $(GSRC)
 	cd ../obj && $(CC) $(CFLAGS) -dynamiclib -read_only_relocs warning  \
 		-o $(BIN_DIR)/libPdTcl.dylib $(GOBJ)  \
@@ -166,9 +155,8 @@ BINARYMODE=@binarymode@
 ABOUT_FILE=$(DESTDIR)$(pddocdir)/1.manual/1.introduction.txt
 install:  all
 	install -d $(DESTDIR)$(libpdbindir)
-	install $(BIN_DIR)/$(GUINAME) $(DESTDIR)$(libpdbindir)/$(GUINAME)
+	-install $(BIN_DIR)/$(GUINAME) $(DESTDIR)$(libpdbindir)/$(GUINAME)
 	install $(BIN_DIR)/pd-watchdog $(DESTDIR)$(libpdbindir)/pd-watchdog
-	install -m644 $(BIN_DIR)/pd.tk $(DESTDIR)$(libpdbindir)/pd.tk
 	install -d $(DESTDIR)$(bindir)
 	install $(BINARYMODE) $(PDEXEC) $(DESTDIR)$(bindir)/pd
 	install -m755 $(BIN_DIR)/pdsend $(DESTDIR)$(bindir)/pdsend
@@ -202,8 +190,9 @@ install:  all
 	@echo "Pd install succeeded."
 
 local-clean:
-	-rm -f ../obj/* $(BIN_DIR)/pd $(BIN_DIR)/$(GUINAME) $(BIN_DIR)/pdsend \
-	    $(BIN_DIR)/pdreceive $(BIN_DIR)/pd-watchdog m_stamp.c
+	-rm -f ../obj/* $(BIN_DIR)/pd $(BIN_DIR)/pdsend \
+	    $(BIN_DIR)/pdreceive $(BIN_DIR)/pd-watchdog m_stamp.c \
+            $(BIN_DIR)/*.tcl
 	-rm -f `find ../portaudio -name "*.o"` 
 	-rm -f *~
 	-(cd ../doc/6.externs; rm -f *.pd_linux)

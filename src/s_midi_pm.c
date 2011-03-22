@@ -10,7 +10,7 @@
 #include "m_pd.h"
 #include "s_stuff.h"
 #include <stdio.h>
-#ifdef UNISTD
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "portaudio.h"
 #include "portmidi.h"
 #include "porttime.h"
 
