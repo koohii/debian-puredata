@@ -1,0 +1,14 @@
+#! /bin/sh
+
+set -e
+
+#DEBHELPER#
+
+update-alternatives --install /usr/bin/pd pd /usr/bin/puredata 100  \
+	--slave /usr/share/man/man1/pd.1.gz pd.1.gz
+/usr/share/man/man1/puredata.1.gz
+
+if [ -x /usr/bin/update-menus ] ; then update-menus ; fi
+
+exit 0
+

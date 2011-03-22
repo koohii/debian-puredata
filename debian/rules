@@ -23,25 +23,15 @@ endif
 #export DH_VERBOSE=1
 
 %:
-	dh --with quilt $@
+	dh --with quilt --with autoreconf $@
+
+override_dh_autoreconf:
+	mkdir -p m4/generated
+	dh_autoreconf
 
 override_dh_auto_configure:
-	cd src && CFLAGS="$(CFLAGS)" ./configure $(archconfflags)
-
-override_dh_auto_build:
-	dh build --before dh_auto_build
-	cd src && make
-	dh build --after dh_auto_build
-
-override_dh_auto_clean:
-	dh clean --before dh_auto_clean
-	cd src && [ ! -f makefile ] || make clean
-	-$(RM) -rf bin/ src/config.log src/config.status src/makefile
-	dh clean --after dh_auto_clean
+	CFLAGS="$(CFLAGS)" ./configure $(archconfflags)
 
 override_dh_compress:
 	dh_compress -X.pd -X.wav -X.aiff -X.txt
 
-override_dh_fixperms:
-	dh_fixperms
-	chmod 0755 debian/puredata/usr/lib/pd/bin/pd.tk

@@ -6,8 +6,6 @@ Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>,
            IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>
 Build-Depends: debhelper (>= 7.0.50~),
  quilt (>= 0.46-7~),
- tcl8.5-dev,
- tk8.5-dev,
  libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
  libjack-dev
 Standards-Version: 3.9.1
@@ -16,8 +14,12 @@ Vcs-Git: git://git.debian.org/collab-maint/puredata.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/puredata.git;a=summary
 
 Package: puredata
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Architecture: all
+Depends: ${misc:Depends},
+ puredata-core,
+ puredata-gui,
+ puredata-extra,
+ puredata-utils
 Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
@@ -27,3 +29,73 @@ Description: realtime computer music and graphics system
  graphical computations require separate packages such as gem (Graphics
  Environment for Multimedia) or pd-pdp (Pd Packet).
 
+Package: puredata-core
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: pd
+Recommends: gem
+Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
+Description: realtime computer music and graphics system (core components)
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ .
+ This package only provides the core infrastructure. Most likely you will want
+ to install the puredata-gui as well
+
+Package: puredata-gui
+Architecture: any
+Depends: ${misc:Depends},
+ wish
+Recommends: puredata 
+Description: realtime computer music and graphics system - development files
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
+ .
+ This package provides the graphical user-interface for Pure Data.
+ Most likely you will want to install "puredata-core" (or even "puredata")
+ as well.
+
+Package: puredata-dev
+Architecture: all
+Depends: ${misc:Depends}, 
+ puredata-core (>= ${source:Version}),
+ puredata-core (<< ${source:Version}.1~)
+Description: realtime computer music and graphics system - development files
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
+ .
+ This package provides the header-files for compiling externals (plugins) for
+ puredata.
+
+Package: puredata-utils
+Section: utils
+Architecture: any
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Provides: pd-utils
+Description: realtime computer music and graphics system - development files
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
+ .
+ This package provides utility applications for puredata, namely pdsend and
+ pdreceive, for sending and rceiving FUDI over the net.
+
+Package: puredata-extra
+Architecture: any
+Depends: ${shlibs:Depends},
+ ${misc:Depends},
+ puredata-core (= ${binary:Version})
+Description: realtime computer music and graphics system - extra files
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
+ .
+ This package provides extra objects that come with Pd, e.g. for signal
+ analysis (fiddle~, sigmund~, bonk~), expression evaluation (expr~) and more

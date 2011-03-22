@@ -1,0 +1,6 @@
+src/m_pd.h usr/include
+src/m_pd.h usr/include/pd
+src/m_imp.h usr/include/pd
+src/g_canvas.h usr/include/pd
+src/s_stuff.h usr/include/pd
+src/g_all_guis.h usr/include/pd
