@@ -32,6 +32,9 @@ override_dh_autoreconf:
 override_dh_auto_configure:
 	CFLAGS="$(CFLAGS)" ./configure $(archconfflags)
 
+override_dh_install:
+	dh_install -X "*.la"
+
 override_dh_fixperms:
 	dh_fixperms
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec chmod 0644 {} +
