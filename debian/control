@@ -46,7 +46,7 @@ Description: realtime computer music and graphics system (core components)
 Package: puredata-gui
 Architecture: any
 Depends: ${misc:Depends},
- wish
+ tk (>=8.4)
 Recommends: puredata 
 Description: realtime computer music and graphics system - development files
  Pure Data (also known as Pd) is a real-time graphical programming environment
