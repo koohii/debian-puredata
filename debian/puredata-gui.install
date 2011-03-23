@@ -1,3 +1,3 @@
 usr/bin/pd-gui.tcl	usr/bin/
-usr/lib/pd/tcl/		usr/lib/puredata
-usr/lib/pd/po/		usr/lib/puredata
+usr/lib/puredata/tcl/		usr/lib/puredata
+usr/lib/puredata/po/		usr/lib/puredata

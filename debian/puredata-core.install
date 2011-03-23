@@ -1,5 +1,5 @@
-usr/bin/pd usr/bin
-usr/lib/pd/bin/pd-watchdog usr/lib/puredata/bin/
+usr/bin/puredata usr/bin
+usr/lib/puredata/bin/pd-watchdog usr/lib/puredata/bin/
 doc/5.reference usr/lib/puredata/doc/
 debian/puredata.xpm usr/share/pixmaps
 debian/puredata.desktop usr/share/applications
