@@ -30,7 +30,7 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
-	CFLAGS="$(CFLAGS)" ./configure $(archconfflags)
+	CFLAGS="$(CFLAGS)" ./configure $(archconfflags) --program-transform-name='s/pd$$/puredata/'
 
 override_dh_install:
 	dh_install -X "*.la"
