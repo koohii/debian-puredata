@@ -2,18 +2,21 @@ TODO for the 0.43 packages:
 
 link with "--as-needed"
 
-lintian warnings:
-	stripping of externals	
-
-E: puredata: doc-base-file-references-missing-file pdmanual:9 /usr/share/doc/puredata/1.manual/index.htm
+lintian:
 E: puredata: doc-base-file-references-missing-file pdmanual:10 /usr/share/doc/puredata/1.manual/*.htm
-E: puredata-extra: unstripped-binary-or-object ./usr/lib/puredata/extra/bonk~/bonk~.pd_linux
-E: puredata-extra: missing-dependency-on-libc needed by ./usr/lib/puredata/extra/bonk~/bonk~.pd_linux and 10 others
-W: puredata-core: binary-without-manpage usr/bin/puredata
+E: puredata: doc-base-file-references-missing-file pdmanual:9 /usr/share/doc/puredata/1.manual/index.htm
+
+W: puredata-extra: extra-license-file usr/lib/puredata/extra/expr~/LICENSE.txt
+W: puredata-gui: script-with-language-extension usr/bin/pd-gui.tcl
 W: puredata-gui: binary-without-manpage usr/bin/pd-gui.tcl
 W: puredata-gui: script-not-executable ./usr/lib/puredata/tcl/pkg_mkIndex.tcl
-W: puredata-gui: script-with-language-extension usr/bin/pd-gui.tcl
-W: puredata-extra: extra-license-file usr/lib/puredata/extra/expr~/LICENSE.txt
-I: puredata source: quilt-patch-missing-description install_directory.patch
+
+P: puredata-core: no-upstream-changelog
+P: puredata-dev: no-upstream-changelog
+P: puredata-extra: no-upstream-changelog
+P: puredata-gui: no-upstream-changelog
+P: puredata: no-upstream-changelog
+P: puredata-utils: no-upstream-changelog
+
 
 
