@@ -1,0 +1,11 @@
+Document: pdmanual
+Title: Pd Manual
+Author: Miller Puckette
+Abstract: This manual describes the usage of Pd.
+ Pd is a realtime computer music system.
+Section: Sound
+
+Format: HTML
+Index: /usr/share/doc/puredata-core/1.manual/index.htm
+Files: /usr/share/doc/puredata-core/1.manual/*.htm
+
