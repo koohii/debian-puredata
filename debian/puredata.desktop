@@ -4,6 +4,6 @@ Name=PureData
 GenericName=
 Comment=
 Icon=puredata.xpm
-Exec=/usr/bin/pd
+Exec=/usr/bin/puredata
 Terminal=false
 Categories=AudioVideo;Audio;
