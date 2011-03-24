@@ -1,0 +1,35 @@
+Author: IOhannes m zmölnig
+Description: fix URIs in manpage to point to some meaningful place
+--- puredata.orig/man/pd.1
++++ puredata/man/pd.1
+@@ -1,6 +1,12 @@
+ .TH pd 1 "1996 Mar 20" GNU
+ .SH NAME
+-pd \- pure data
++pd \- Pure Data
++.SH SYNOPSIS
++.B pd
++.RI [ OPTIONS ]
++.LP
++.B puredata
++.RI [ OPTIONS ]
+ .SH DESCRIPTION
+ Pd is a graphical programming environment for real-time audio synthesis
+ and related applications.  It sports a rich set of real-time control
+@@ -14,12 +20,9 @@
+ .PP
+ .B http://www.crca.ucsd.edu/~msp/Pd_documentation/index.htm
+ .PP
+-or seek a copy on your own machine, perhaps in
++or seek a copy on your own machine.
++On Debian, you should be able to find it in
+ .PP
+-.B file:/usr/local/bin/pd/doc/1.manual/index.htm
+-.PP
+-or
+-.PP
+-.B file:/usr/bin/pd/doc/1.manual/index.htm
++.B file:/usr/share/doc/puredata-core/1.manual/index.htm
+ .SH SEE ALSO
+-pdsend(1), pdreceive(1)
++pdsend(1), pdreceive(1), pdgui(1)
