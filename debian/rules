@@ -35,6 +35,9 @@ override_dh_auto_configure:
 override_dh_install:
 	dh_install -X "*.la"
 
+override_dh_installchangelogs:
+	dh_installchangelogs src/CHANGELOG.txt
+
 override_dh_fixperms:
 	dh_fixperms
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
