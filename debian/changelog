@@ -1,6 +1,16 @@
 puredata (0.43.0-1) UNRELEASED; urgency=low
 
   * New upstream release
+  * Split puredata into several packages:
+    - puredata-core : binary
+    - puredata-gui  : user interface
+    - puredata-dev  : development files (headers)
+    - puredata-extra: externals
+    - puredata-utils: pd-related applications
+    - puredata      : meta-package depending on all of the above
+    This allows to install only a minimal set of puredata (e.g. you don't need
+    the gui (which pulls in X) if you are running on a headless machine)
+    (closes: #568770)
 
  -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 22 Mar 2011 17:28:07 +0100
 
