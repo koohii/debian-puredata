@@ -39,6 +39,10 @@ override_dh_fixperms:
 	dh_fixperms
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec chmod 0644 {} +
 
+override_dh_shlibdeps: 
+	dh_shlibdeps
+	find debian/puredata-extra/ -name "*.pd_linux" -exec dpkg-shlibdeps -Tdebian/puredata-extra.substvars {} +
+
 override_dh_compress:
 	dh_compress -X.pd -X.wav -X.aiff -X.txt
 
