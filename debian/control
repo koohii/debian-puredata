@@ -20,6 +20,7 @@ Architecture: all
 Depends: ${misc:Depends},
  puredata-core,
  puredata-gui,
+ puredata-doc,
  puredata-extra,
  puredata-utils
 Provides: pd
@@ -59,6 +60,20 @@ Description: realtime computer music and graphics system - GUI
  This package provides the graphical user-interface for Pure Data.
  Most likely you will want to install "puredata-core" (or even "puredata")
  as well.
+
+Package: puredata-doc
+Architecture: any
+Depends: ${misc:Depends}
+Recommends: puredata 
+Description: realtime computer music and graphics system - documentation
+ Pure Data (also known as Pd) is a real-time graphical programming environment
+ for audio and graphics processing. Pd's audio functions are built-in;
+ graphical computations require separate packages such as gem (Graphics
+ Environment for Multimedia) or pd-pdp (Pd Packet).
+ .
+ This package provides the documentation for Pure Data.
+ Most likely you will want to install "puredata" as well.
+
 
 Package: puredata-dev
 Architecture: all
