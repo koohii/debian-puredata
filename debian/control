@@ -78,7 +78,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
 Provides: pd-utils
-Description: realtime computer music and graphics system - development files
+Description: realtime computer music and graphics system - utility programs
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
  graphical computations require separate packages such as gem (Graphics
