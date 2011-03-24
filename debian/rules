@@ -39,6 +39,8 @@ override_dh_fixperms:
 	dh_fixperms
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
 		chmod 0644 {} +
+	find debian/puredata-gui/ -type f -name "pkg_mkIndex.tcl" -exec \
+		chmod 0755 {} +
 
 override_dh_shlibdeps: 
 	dh_shlibdeps
