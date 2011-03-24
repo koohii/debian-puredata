@@ -46,7 +46,7 @@ Description: realtime computer music and graphics system - core components
  to install the puredata-gui as well
 
 Package: puredata-gui
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends},
  tk (>=8.4),
  tcl8.5 | tclsh
