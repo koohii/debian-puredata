@@ -2,21 +2,3 @@ TODO for the 0.43 packages:
 
 link with "--as-needed"
 
-lintian:
-E: puredata: doc-base-file-references-missing-file pdmanual:10 /usr/share/doc/puredata/1.manual/*.htm
-E: puredata: doc-base-file-references-missing-file pdmanual:9 /usr/share/doc/puredata/1.manual/index.htm
-
-W: puredata-extra: extra-license-file usr/lib/puredata/extra/expr~/LICENSE.txt
-W: puredata-gui: script-with-language-extension usr/bin/pd-gui.tcl
-W: puredata-gui: binary-without-manpage usr/bin/pd-gui.tcl
-W: puredata-gui: script-not-executable ./usr/lib/puredata/tcl/pkg_mkIndex.tcl
-
-P: puredata-core: no-upstream-changelog
-P: puredata-dev: no-upstream-changelog
-P: puredata-extra: no-upstream-changelog
-P: puredata-gui: no-upstream-changelog
-P: puredata: no-upstream-changelog
-P: puredata-utils: no-upstream-changelog
-
-
-
