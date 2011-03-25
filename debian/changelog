@@ -12,6 +12,10 @@ puredata (0.43.0-1) UNRELEASED; urgency=low
       the gui (which pulls in X) if you are running on a headless machine);
     It also allows to install the infrastructure for building plugins
       (puredata-dev) with minimal dependencies (closes: #568770)
+  * Install as "puredata" rather than "pd"
+    - this allows for various flavours of Pd to co-exist (e.g. puredata and
+      pd-extended)
+    - /usr/bin/pd is made available via update-alternatives
 
  -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 29 Mar 2011 09:49:39 +0200
 
