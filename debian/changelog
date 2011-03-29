@@ -9,10 +9,11 @@ puredata (0.43.0-1) UNRELEASED; urgency=low
     - puredata-utils: pd-related applications
     - puredata      : meta-package depending on all of the above
     This allows to install only a minimal set of puredata (e.g. you don't need
-    the gui (which pulls in X) if you are running on a headless machine)
-    (closes: #568770)
+      the gui (which pulls in X) if you are running on a headless machine);
+    It also allows to install the infrastructure for building plugins
+      (puredata-dev) with minimal dependencies (closes: #568770)
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 22 Mar 2011 17:28:07 +0100
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 29 Mar 2011 09:49:39 +0200
 
 puredata (0.42.6-2) unstable; urgency=low
 
