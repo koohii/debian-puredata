@@ -62,6 +62,7 @@ Description: realtime computer music and graphics system - GUI
  as well.
 
 Package: puredata-doc
+Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Recommends: puredata 
