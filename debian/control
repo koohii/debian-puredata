@@ -77,6 +77,7 @@ Description: realtime computer music and graphics system - documentation
 
 
 Package: puredata-dev
+Section: devel
 Architecture: all
 Depends: ${misc:Depends}, 
  puredata-core (>= ${source:Version}),
