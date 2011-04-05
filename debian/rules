@@ -23,7 +23,7 @@ endif
 #export DH_VERBOSE=1
 
 %:
-	dh --with quilt --with autoreconf $@
+	dh --with autoreconf $@
 
 override_dh_autoreconf:
 	mkdir -p m4/generated
