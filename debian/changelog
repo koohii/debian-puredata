@@ -17,8 +17,10 @@ puredata (0.43.0-1) UNRELEASED; urgency=low
     - this allows for various flavours of Pd to co-exist (e.g. puredata and
       pd-extended)
     - /usr/bin/pd is made available via update-alternatives
+  * Fix debian/watch so beta-releases are not reported as more up-to-date than
+    final releases
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 29 Mar 2011 09:49:39 +0200
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 05 Apr 2011 16:57:29 +0200
 
 puredata (0.42.6-2) unstable; urgency=low
 
