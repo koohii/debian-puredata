@@ -1,4 +1,4 @@
 # process this file with 'uscan'
 version=3
-opts="uversionmangle=s/-/./" \
+opts="uversionmangle=s/-/./;s/test/~/" \
   http://crca.ucsd.edu/~msp/Software/pd-(.*).src.tar.gz
