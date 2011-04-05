@@ -6,7 +6,6 @@ Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>,
            IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>
 Build-Depends: debhelper (>= 7.0.50~),
  dh-autoreconf,
- quilt (>= 0.46-7~),
  gettext,
  libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
  libjack-dev
