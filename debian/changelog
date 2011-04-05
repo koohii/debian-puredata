@@ -11,7 +11,7 @@ puredata (0.43.0-1) UNRELEASED; urgency=low
     - puredata      : meta-package depending on all of the above
     This allows one to install only a minimal set of puredata (e.g. you don't
     need the gui (which pulls in X) if you are running on a headless machine);
-    It also allows to install the infrastructure for building plugins
+    It also allows one to install the infrastructure for building plugins
     (puredata-dev) with minimal dependencies (closes: #568770)
   * Install as "puredata" rather than "pd"
     - this allows for various flavours of Pd to co-exist (e.g. puredata and
