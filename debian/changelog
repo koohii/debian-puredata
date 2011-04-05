@@ -1,6 +1,7 @@
 puredata (0.43.0-1) UNRELEASED; urgency=low
 
   * New upstream release
+    - new upstream includes most debian/patches
   * Split puredata into several packages:
     - puredata-core : binary
     - puredata-gui  : user interface
