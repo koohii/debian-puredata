@@ -5,11 +5,13 @@ Description: search /usr/lib/pd/extra/ for externals
  add it manually
 --- puredata.orig/src/s_path.c
 +++ puredata/src/s_path.c
-@@ -236,6 +236,7 @@
-     sys_expandpath("~/pd-externals", pathbuf, MAXPDSTRING);
-     sys_staticpath = namelist_append(0, pathbuf, 0);
-     sys_staticpath = namelist_append(sys_staticpath, "/usr/local/lib/pd-externals", 0);
-+    sys_staticpath = namelist_append(sys_staticpath, "/usr/lib/pd/extra", 0);
+@@ -252,6 +252,9 @@
  #endif
+     /* add built-in "extra" path last so its checked last */
+     sys_staticpath = namelist_append(sys_staticpath, p, 0);
++    /* add common path for pd very last, so puredata specific externals get 
++     * higher priority */
++    sys_staticpath = namelist_append(sys_staticpath, "/usr/lib/pd/extra", 0);
+ }
  
- #ifdef __APPLE__
+ #ifdef MSW
