@@ -1,5 +1,6 @@
-puredata (0.43.0-1) UNRELEASED; urgency=low
+puredata (0.43.0-1) unstable; urgency=low
 
+  [IOhannes m zmölnig]
   * New upstream release
     - new upstream includes most debian/patches
   * Split puredata into several packages:
@@ -20,7 +21,10 @@ puredata (0.43.0-1) UNRELEASED; urgency=low
   * Fix debian/watch so beta-releases are not reported as more up-to-date than
     final releases
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 05 Apr 2011 16:57:29 +0200
+  [Paul Brossier]
+  * Review packages and bump standards version to 3.9.2, thanks to IOhannes
+
+ -- Paul Brossier <piem@debian.org>  Mon, 02 May 2011 21:19:17 +0200
 
 puredata (0.42.6-2) unstable; urgency=low
 
