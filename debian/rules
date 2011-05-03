@@ -40,20 +40,28 @@ override_dh_installchangelogs:
 
 override_dh_fixperms:
 	dh_fixperms
+ifneq (,$(findstring puredata-extra, $(shell dh_listpackages)))
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
 		chmod 0644 {} +
+endif
+ifneq (,$(findstring puredata-gui, $(shell dh_listpackages)))
 	find debian/puredata-gui/ -type f -name "pkg_mkIndex.tcl" -exec \
 		chmod 0755 {} +
+endif
 
 override_dh_shlibdeps: 
 	dh_shlibdeps
+ifneq (,$(findstring puredata-extra, $(shell dh_listpackages)))
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
 		dpkg-shlibdeps -Tdebian/puredata-extra.substvars {} +
+endif
 
 override_dh_strip:
 	dh_strip
+ifneq (,$(findstring puredata-extra, $(shell dh_listpackages)))
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
 		strip --remove-section=.comment --remove-section=.note --strip-unneeded {} +
+endif
 
 override_dh_compress:
 	dh_compress -X.pd -X.wav -X.aiff -X.txt
