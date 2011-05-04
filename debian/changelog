@@ -1,3 +1,14 @@
+puredata (0.43.0-2) unstable; urgency=low
+
+  [ IOhannes m zmölnig ]
+  * debian/rules: only apply package-specific overrides, if the package is built
+
+  [ Paul Brossier ]
+  * debian/patches/usercflags.patch: make sure user cflags are passed after default ones
+  * debian/source/local-options: add unapply-patches option
+
+ -- Paul Brossier <piem@debian.org>  Wed, 04 May 2011 02:35:41 +0200
+
 puredata (0.43.0-1) unstable; urgency=low
 
   [IOhannes m zmölnig]
