@@ -1,0 +1,13 @@
+Author: IOhannes m zmoelnig
+Description: fixes configure-checks for kFreeBSD/GNU
+--- puredata.orig/configure.ac
++++ puredata/configure.ac
+@@ -32,7 +32,7 @@
+ 	LDFLAGS="$LDFLAGS -L/sw/lib"
+ 	EXTERNAL_LDFLAGS="-bundle -undefined dynamic_lookup"
+ 	;;
+-*linux*|GNU|GNU/kFreeBSD)
++*linux*|GNU|*kfreebsd*gnu*)
+ # GNU and GNU/kFreeBSD are for Debian, were they are treated very similar to linux
+ 	if test "x${host}" = "xGNU"; then
+ 	 HURD=yes

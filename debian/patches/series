@@ -2,3 +2,4 @@ usercflags.patch
 pd2puredata.patch
 usrlibpd_path.patch
 fixmanpage.patch
+kfreebsd_fixes.patch
