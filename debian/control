@@ -7,7 +7,7 @@ Uploaders: Guenter Geiger (Debian/GNU) <geiger@debian.org>,
 Build-Depends: debhelper (>= 7.0.50~),
  dh-autoreconf,
  gettext,
- libasound2-dev  [!hurd-i386 !kfreebsd-amd64 !kfreebsd-i386],
+ libasound2-dev [linux-any],
  libjack-dev
 Standards-Version: 3.9.2
 Homepage: http://puredata.info
