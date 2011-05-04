@@ -1,0 +1,13 @@
+Author: Paul Brossier <piem@debian.org>
+Description: do not overwrite user cflags, add them *after* hardcoded ones
+--- puredata.orig/configure.ac
++++ puredata/configure.ac
+@@ -40,7 +40,7 @@ case $host in
+ 	if test "x${ANDROID}" = "xno"; then
+ 	 LINUX=yes
+ 	 portaudio=yes
+-	 CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer"
++	 CFLAGS="-O6 -funroll-loops -fomit-frame-pointer $CFLAGS"
+ 	fi
+ 	EXTERNAL_CFLAGS="-fPIC"
+ 	EXTERNAL_LDFLAGS="-Wl,--export-dynamic -shared -fPIC"
