@@ -1,23 +1,17 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-ARCHITECTURE := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
-archconfflags := --prefix=/usr
+archconfflags := 
 
-ifeq ($(ARCHITECTURE), hurd-i386)
-  archconfflags := $(archconfflags) --enable-jack --disable-alsa --disable-oss
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+  archconfflags += --enable-alsa
 else
-ifeq ($(ARCHITECTURE), kfreebsd-amd64)
-  archconfflags := $(archconfflags) --enable-jack --disable-alsa
-else
-ifeq ($(ARCHITECTURE), kfreebsd-i386)
-  archconfflags := $(archconfflags) --enable-jack --disable-alsa
-else
-  archconfflags := $(archconfflags) --enable-jack --enable-alsa
+  archconfflags += --disable-alsa
 endif
-endif
-endif
+archconfflags += --enable-jack
+
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -30,7 +24,7 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
-	CFLAGS="$(CFLAGS)" ./configure $(archconfflags) --program-transform-name='s/pd$$/puredata/'
+	CFLAGS="$(CFLAGS)" dh_auto_configure -- --program-transform-name='s/pd$$/puredata/' $(archconfflags)
 
 override_dh_install:
 	dh_install -X "*.la" -X "LICENSE.txt"
