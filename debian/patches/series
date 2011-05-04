@@ -5,3 +5,4 @@ fixmanpage.patch
 kfreebsd_fixes.patch
 audio_oss_cleanup.patch
 hurd_fixes.patch
+clean_helpbrowser.patch
