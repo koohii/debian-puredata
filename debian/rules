@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+LDFLAGS+=-Wl,--as-needed
+
 DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
 archconfflags := 
@@ -24,7 +26,7 @@ override_dh_autoreconf:
 	dh_autoreconf
 
 override_dh_auto_configure:
-	CFLAGS="$(CFLAGS)" dh_auto_configure -- --program-transform-name='s/pd$$/puredata/' $(archconfflags)
+	CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" dh_auto_configure -- --program-transform-name='s/pd$$/puredata/' $(archconfflags)
 
 override_dh_install:
 	dh_install -X "*.la" -X "LICENSE.txt"
