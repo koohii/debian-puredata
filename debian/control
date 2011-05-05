@@ -37,6 +37,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
+Replaces: puredata (<< 0.43)
+Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - core components
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
@@ -50,6 +52,8 @@ Depends: ${misc:Depends},
  tk (>=8.4),
  tcl8.5 | tclsh
 Recommends: puredata 
+Replaces: puredata (<< 0.43)
+Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - GUI
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
@@ -65,6 +69,8 @@ Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Recommends: puredata 
+Replaces: puredata (<< 0.43)
+Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - documentation
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
@@ -96,6 +102,8 @@ Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
 Provides: pd-utils
+Replaces: puredata (<< 0.43)
+Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - utility programs
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
