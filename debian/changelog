@@ -1,3 +1,25 @@
+puredata (0.43.0-3) unstable; urgency=low
+
+  [ IOhannes m zmölnig ]
+  * debian/patches/kfreebsd_fixes.patch: kFreeBSD build fixes
+  * debian/rules: simplified arch-dependent build-depends
+  * debian/rules: use dh_auto_configure, distinguish between linux/non-linux
+  * debian/patches/audio_oss_cleanup.patch: cleanup ifdef logic in
+    s_audio_oss.c
+  * debian/patches/hurd_fixes.patch: fix hurd compilation
+  * debian/patches/series: updated
+  * debian/rules: link with --as-needed
+  * debian/patches/clean_helpbrowser.patch: cleanup helpbrowser to show files
+    after directories
+  * forwarded patches to upstream
+  * debian/changelog: shortened changelog-lines to keep lintian happy
+  * debian/control: Conflict with older versions of puredata (Closes: #625663)
+
+  [ Paul Brossier ]
+  * debian/changelog: write changelog, build and upload package.
+
+ -- Paul Brossier <piem@debian.org>  Wed, 11 May 2011 01:03:01 +0200
+
 puredata (0.43.0-2) unstable; urgency=low
 
   [ IOhannes m zmölnig ]
