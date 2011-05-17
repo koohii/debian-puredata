@@ -1,4 +1,5 @@
 TODO for the 0.43 packages:
 
-link with "--as-needed"
+default audio-backend: OSS is usually not available (any more) even on linux
+default midi-backend : OSS is usually not available (any more) even on linux
 
