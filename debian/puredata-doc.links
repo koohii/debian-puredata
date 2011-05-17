@@ -1,7 +1,7 @@
-usr/share/doc/puredata-doc/1.manual           usr/lib/puredata/doc/1.manual
-usr/share/doc/puredata-doc/2.control.examples usr/lib/puredata/doc/2.control.examples
-usr/share/doc/puredata-doc/3.audio.examples   usr/lib/puredata/doc/3.audio.examples
-usr/share/doc/puredata-doc/4.data.structures  usr/lib/puredata/doc/4.data.structures
-usr/share/doc/puredata-doc/6.externs          usr/lib/puredata/doc/6.externs
-usr/share/doc/puredata-doc/7.stuff            usr/lib/puredata/doc/7.stuff
-usr/share/doc/puredata-doc/sound              usr/lib/puredata/doc/sound
+usr/lib/puredata/doc/1.manual		usr/share/doc/puredata-doc/1.manual
+usr/lib/puredata/doc/2.control.examples	usr/share/doc/puredata-doc/2.control.examples
+usr/lib/puredata/doc/3.audio.examples	usr/share/doc/puredata-doc/3.audio.examples
+usr/lib/puredata/doc/4.data.structures	usr/share/doc/puredata-doc/4.data.structures
+usr/lib/puredata/doc/6.externs		usr/share/doc/puredata-doc/6.externs
+usr/lib/puredata/doc/7.stuff		usr/share/doc/puredata-doc/7.stuff
+usr/lib/puredata/doc/sound		usr/share/doc/puredata-doc/sound
