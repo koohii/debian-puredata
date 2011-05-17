@@ -21,7 +21,8 @@ Depends: ${misc:Depends},
  puredata-gui,
  puredata-doc,
  puredata-extra,
- puredata-utils
+ puredata-utils,
+ puredata-dev
 Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
