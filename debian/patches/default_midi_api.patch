@@ -1,0 +1,15 @@
+Author: IOhannes m zmölnig
+Description: make OSS MIDI available as fallback for ALSA MIDI
+--- puredata.orig/src/s_midi.c
++++ puredata/src/s_midi.c
+@@ -500,7 +500,9 @@
+ {
+     int n = 0;
+     strcpy(buf, "{ ");
+-    sprintf(buf + strlen(buf), "{default-MIDI %d} ", API_DEFAULT); n++;
++#ifdef USEAPI_OSS
++    sprintf(buf + strlen(buf), "{OSS-MIDI %d} ", API_OSS); n++;
++#endif
+ #ifdef USEAPI_ALSA
+     sprintf(buf + strlen(buf), "{ALSA-MIDI %d} ", API_ALSA); n++;
+ #endif
