@@ -1,3 +1,18 @@
+puredata (0.43.0-4) UNRELEASED; urgency=low
+
+  [ Paul Brossier ]
+  * debian/control: puredata-dev to section libdevel
+
+  [ IOhannes m zmölnig ]
+  * make ALSA the default API on linux
+  * make meta-package depend on "puredata-dev"
+  * no need for "puredata-dev" to depend on "puredata"
+  * make "puredata-doc" install into /usr/(lib|share)/puredata
+  * .menu needs both puredata-core and puredata-gui
+  * moved .desktop file into "puredata" package
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 24 May 2011 11:20:22 +0200
+
 puredata (0.43.0-3) unstable; urgency=low
 
   [ IOhannes m zmölnig ]
