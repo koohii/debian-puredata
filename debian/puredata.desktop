@@ -1,8 +1,15 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Application
 Name=PureData
 GenericName=
-Comment=
+Comment=Visual dataflow programming platform for multimedia
+Comment[ca]=Plataforma de programació visual per aplicacions multimèdia
+Comment[de]=Grafische Datenflussprogrammierung für Multimedia
+Comment[es]=Plataforma de programación visual para aplicaciones multimedia
+Comment[fr]=Plateforme de programmation visuelle pour applications multimédia
+Comment[it]=Piattaforma di programmazione visuale per applicazioni multimedia
+Comment[pt]=Plataforma de programação visuais para multimedia
 Icon=puredata.xpm
 Exec=/usr/bin/puredata
 Terminal=false
