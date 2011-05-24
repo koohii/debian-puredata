@@ -1,4 +1,4 @@
-?package(puredata-core):needs="x11" section="Applications/Sound"\
+?package(puredata-core,puredata-gui):needs="x11" section="Applications/Sound"\
   title="PureData" \
   command="/usr/bin/puredata" \
   icon="/usr/share/pixmaps/puredata.xpm"
