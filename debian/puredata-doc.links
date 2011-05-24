@@ -1,4 +1,5 @@
-usr/lib/puredata/doc/1.manual		usr/share/doc/puredata-doc/1.manual
+usr/share/puredata/doc/1.manual		usr/lib/puredata/doc/1.manual
+usr/share/puredata/doc/1.manual		usr/share/doc/puredata-doc/1.manual
 usr/lib/puredata/doc/2.control.examples	usr/share/doc/puredata-doc/2.control.examples
 usr/lib/puredata/doc/3.audio.examples	usr/share/doc/puredata-doc/3.audio.examples
 usr/lib/puredata/doc/4.data.structures	usr/share/doc/puredata-doc/4.data.structures
