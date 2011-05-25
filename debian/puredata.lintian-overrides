@@ -1,5 +1,0 @@
-# 'puredata' is a meta-package depending on puredata-core (providing
-# /usr/bin/puredata) and puredata-gui (providing a graphical user interface
-# which gets automatically used); since the desktop entry only makes sense if
-# both the core and the GUI are available, it is installed by the meta package.
-puredata: desktop-command-not-in-package usr/share/applications/puredata.desktop usr/bin/puredata

@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Application
 Name=PureData
-GenericName=
+GenericName=Pd
 Comment=Visual dataflow programming platform for multimedia
 Comment[ca]=Plataforma de programació visual per aplicacions multimèdia
 Comment[de]=Grafische Datenflussprogrammierung für Multimedia
@@ -11,6 +11,7 @@ Comment[fr]=Plateforme de programmation visuelle pour applications multimédia
 Comment[it]=Piattaforma di programmazione visuale per applicazioni multimedia
 Comment[pt]=Plataforma de programação visuais para multimedia
 Icon=puredata.xpm
-Exec=/usr/bin/puredata
+Exec=/usr/lib/puredata/tcl/pd-gui.tcl
 Terminal=false
 Categories=AudioVideo;Audio;
+MimeType=text/x-puredata;text/x-maxmsp;
