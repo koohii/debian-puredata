@@ -1,0 +1,7 @@
+# 'puredata' is a meta-package depending on puredata-gui (providing the
+#  graphical user interface, run by /usr/lib/puredata/tcl/pd-gui.tcl) and
+#  puredata-core (prodiving the core of the program).  As of 0.43, it is now
+#  possible to install and run puredata-gui alone without puredata-core.
+#  Since the desktop entry only makes sense if both the core and the GUI are
+#  available, it is installed by the meta package.
+puredata: desktop-command-not-in-package /usr/share/applications/puredata.desktop /usr/lib/puredata/tcl/pd-gui.tcl

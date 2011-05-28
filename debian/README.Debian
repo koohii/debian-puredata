@@ -1,6 +1,14 @@
 pd for Debian
 ----------------------
 
+Running the GUI as standalone
+=============================
+
+As of 0.43, it is now possible to run the GUI without the 'pd' process at all.
+This allows you to run only the GUI on one machine and have it talk over the
+network to the 'pd' process running on a different machine.
+
+
 Soundcards and Drivers
 =======================
 
@@ -27,8 +35,22 @@ There are different methods to solve this problem.
 Configuration
 ==============
 
-Instead of passing your command line flags to pd, you can write them
-into your ~/.pdrc file. Each commandline switch on its own line like
+There are more and more options for embedding the configuration directly into
+the patch.  This means that most of the time, it is best to start Pd with the
+default configuration and then let each patch configure Pd as it needs it.
+This allows patches to easily run across different installs, machines, and
+distros.
+
+You can find more information on configuration in the puredata FAQ:
+http://puredata.info/docs/faq/pdsettings
+
+Old, Failsafe Configuration
+===========================
+
+Though officially deemed deprecated, it is still possible to use the ~/.pdrc
+to include command like flags at startup. Instead of passing your command line
+flags to pd, you can write them into your ~/.pdrc file. Each commandline
+switch on its own line like
 
  -path /usr/lib/pd/doc
  -frags 4
@@ -37,4 +59,4 @@ into your ~/.pdrc file. Each commandline switch on its own line like
 
 
 
- -- Guenter Geiger <geiger@debian.org>, Tue,  3 Aug 1999 14:33:26 +0200
+ -- Hans-Christoph Steiner <hans@eds.org>, Sat, 28 May 2011 11:31:31 -0400
