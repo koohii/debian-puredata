@@ -1,0 +1,18 @@
+Author: IOhannes m zmölnig
+Description: segfault prevention in DSP-loop detection
+Forward: http://sourceforge.net/tracker/?func=detail&aid=3307503&group_id=55736&atid=478072
+--- puredata.orig/src/d_ugen.c
++++ puredata/src/d_ugen.c
+@@ -617,6 +617,12 @@
+ 
+     if (ugen_loud) post("ugen_start_graph...");
+ 
++    /* protect against invalid numsignals
++     * this might happen if we have an abstraction with inlet~/outlet~ opened as a toplevel patch
++     */
++    if(toplevel)
++        ninlets=noutlets=0;
++
+     dc->dc_ugenlist = 0;
+     dc->dc_toplevel = toplevel;
+     dc->dc_iosigs = sp;
