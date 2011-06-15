@@ -1,4 +1,4 @@
-puredata (0.43.0-4) UNRELEASED; urgency=low
+puredata (0.43.0-4) unstable; urgency=low
 
   [ Paul Brossier ]
   * debian/control: puredata-dev to section libdevel
@@ -11,7 +11,7 @@ puredata (0.43.0-4) UNRELEASED; urgency=low
   * .menu needs both puredata-core and puredata-gui
   * moved .desktop file into "puredata" package
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 24 May 2011 11:20:22 +0200
+ -- Paul Brossier <piem@debian.org>  Wed, 15 Jun 2011 16:22:05 -0200
 
 puredata (0.43.0-3) unstable; urgency=low
 
