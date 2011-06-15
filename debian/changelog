@@ -9,9 +9,8 @@ puredata (0.43.0-4) unstable; urgency=low
   * no need for "puredata-dev" to depend on "puredata"
   * make "puredata-doc" install into /usr/(lib|share)/puredata
   * .menu needs both puredata-core and puredata-gui
-  * moved .desktop file into "puredata" package
 
- -- Paul Brossier <piem@debian.org>  Wed, 15 Jun 2011 16:22:05 -0200
+ -- Paul Brossier <piem@debian.org>  Wed, 15 Jun 2011 16:47:06 -0200
 
 puredata (0.43.0-3) unstable; urgency=low
 
