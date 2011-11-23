@@ -1,0 +1,14 @@
+#! /bin/sh
+
+set -e
+
+#DEBHELPER#
+
+# older versions of puredata-core provided 5.reference as a directory
+# whereas nowadays it is a symlink to /usr/share/puredata/doc/5.reference
+# so we delete the directory here to smooth upgrades
+for d in 5.reference
+do
+  dir=/usr/lib/puredata/doc/$d
+  test -d "${dir}" && rm -r "${dir}"
+done
