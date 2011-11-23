@@ -38,8 +38,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
-Replaces: puredata (<< 0.43)
-Breaks: puredata (<< 0.43)
+Replaces: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
+Breaks: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
 Description: realtime computer music and graphics system - core components
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
