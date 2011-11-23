@@ -53,8 +53,10 @@ Depends: ${misc:Depends},
  tk (>=8.4),
  tcl8.5 | tclsh
 Recommends: puredata 
-Replaces: puredata (<< 0.43)
-Breaks: puredata (<< 0.43)
+Replaces: puredata (<< 0.43),
+ puredata-core (<< 0.43.0-5)
+Breaks: puredata (<< 0.43),
+ puredata-core (<< 0.43.0-5)
 Description: realtime computer music and graphics system - GUI
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
