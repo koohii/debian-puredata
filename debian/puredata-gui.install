@@ -1,3 +1,4 @@
-debian/pd-gui	usr/bin/
-usr/lib/puredata/tcl/		usr/lib/puredata
-usr/lib/puredata/po/		usr/lib/puredata
+debian/pd-gui		usr/bin/
+usr/lib/puredata/tcl/	usr/lib/puredata/
+usr/lib/puredata/po/	usr/lib/puredata/
+debian/puredata.desktop	usr/share/applications/

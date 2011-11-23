@@ -4,5 +4,4 @@ usr/lib/puredata/bin/pd-watchdog	usr/lib/puredata/bin/
 doc/5.reference				usr/share/puredata/doc/
 doc/7.stuff				usr/share/puredata/doc/
 debian/puredata.xpm			usr/share/pixmaps/
-debian/puredata.desktop			usr/share/applications/
 usr/share/man/man1/puredata.1		usr/share/man/man1/
