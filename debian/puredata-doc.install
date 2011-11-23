@@ -3,5 +3,4 @@ doc/2.control.examples	usr/lib/puredata/doc/
 doc/3.audio.examples	usr/lib/puredata/doc/
 doc/4.data.structures	usr/lib/puredata/doc/
 doc/6.externs		usr/lib/puredata/doc/
-doc/7.stuff		usr/lib/puredata/doc/
 doc/sound		usr/lib/puredata/doc/
