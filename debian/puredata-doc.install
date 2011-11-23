@@ -1,6 +1,6 @@
 doc/1.manual		usr/share/puredata/doc/
-doc/2.control.examples	usr/lib/puredata/doc/
-doc/3.audio.examples	usr/lib/puredata/doc/
-doc/4.data.structures	usr/lib/puredata/doc/
-doc/6.externs		usr/lib/puredata/doc/
-doc/sound		usr/lib/puredata/doc/
+doc/2.control.examples	usr/share/puredata/doc/
+doc/3.audio.examples	usr/share/puredata/doc/
+doc/4.data.structures	usr/share/puredata/doc/
+doc/6.externs		usr/share/puredata/doc/
+doc/sound		usr/share/puredata/doc/
