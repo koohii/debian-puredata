@@ -88,6 +88,8 @@ Package: puredata-dev
 Section: libdevel
 Architecture: all
 Depends: ${misc:Depends}
+Replaces: puredata (<< 0.43)
+Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - development files
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
