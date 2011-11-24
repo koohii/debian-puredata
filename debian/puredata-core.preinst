@@ -10,5 +10,5 @@ set -e
 for d in 5.reference
 do
   dir=/usr/lib/puredata/doc/$d
-  test -d "${dir}" && rm -r "${dir}"
+  test -d "${dir}" && rm -r "${dir}" || true
 done
