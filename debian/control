@@ -120,7 +120,7 @@ Package: puredata-extra
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends},
- puredata-core (= ${binary:Version})
+ puredata-core (>= ${source:Version}), puredata-core (<< ${source:Upstream-Version}+1~)
 Replaces: puredata (<< 0.43)
 Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - extra files
