@@ -1,3 +1,13 @@
 TODO for the 0.43 packages:
 
- ...
+ make sure upgrade works as expected!
+    manually installing:
+         dpkg -i puredata puredata-doc puredata-core puredata-gui puredata-extra puredata-utils puredata-dev
+
+    upgrade:
+		0.43.0-4 	-> 0.43.0-5	OK
+		0.42.6-1+b1 	-> 0.43.0-5	OK
+		0.42.6-1+b1 -> 0.43.0-4 -> 0.43.0-5	OK
+
+
+    i really hould create a file:/// repository and install from there!
