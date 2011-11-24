@@ -1,3 +1,19 @@
+puredata (0.43.0-5) UNRELEASED; urgency=low
+
+  [ IOhannes m zmölnig ]
+  * Remove puredata.preinst script (Closes: #639763)
+  * Move 7.stuff to puredata-core package (Closes: #645041)
+  * Install all patches into /usr/share/puredata
+  * Refer to manual in /usr/share/puredata/
+  * Move puredata.desktop to puredata-gui
+  * Fixe spelling of "Pure Data" in desktop entry
+  * puredata-* breaks/replaces puredata<0.43
+  * puredata-gui now breaks/replaces older puredata-core
+  * puredata-core now breaks/replaces older puredata-doc
+  * puredata-core.preinst script to smooth upgrade
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 24 Nov 2011 11:20:55 +0100
+
 puredata (0.43.0-4) unstable; urgency=low
 
   [ Paul Brossier ]
