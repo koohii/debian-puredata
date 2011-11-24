@@ -6,6 +6,7 @@ kfreebsd_fixes.patch
 audio_oss_cleanup.patch
 hurd_fixes.patch
 clean_helpbrowser.patch
+helpbrowser_puredata-doc.patch
 default_audio_api.patch
 default_midi_api.patch
 flush-to-disk.patch
