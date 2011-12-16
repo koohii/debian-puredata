@@ -11,8 +11,10 @@ puredata (0.43.0-5) UNRELEASED; urgency=low
   * puredata-gui now breaks/replaces older puredata-core
   * puredata-core now breaks/replaces older puredata-doc
   * puredata-core.preinst script to smooth upgrade
+  * Remove recommends/suggests from "puredata-core" (Closes: #652269)
+  * Shortened descriptions of sub-packages
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 24 Nov 2011 11:20:55 +0100
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Fri, 16 Dec 2011 10:07:08 +0100
 
 puredata (0.43.0-4) unstable; urgency=low
 
