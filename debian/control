@@ -26,7 +26,7 @@ Depends: ${misc:Depends},
 Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
-Description: realtime computer music and graphics system 
+Description: realtime computer music and graphics system
  Pure Data (also known as Pd) is a real-time graphical programming environment
  for audio and graphics processing. Pd's audio functions are built-in;
  graphical computations require separate packages such as gem (Graphics
@@ -40,7 +40,7 @@ Replaces: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
 Breaks: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
 Description: realtime computer music and graphics system - core components
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
+ for audio and graphics processing.
  .
  This package only provides the core infrastructure. Most likely you will want
  to install the puredata-gui as well
@@ -50,16 +50,14 @@ Architecture: all
 Depends: ${misc:Depends},
  tk (>=8.4),
  tcl8.5 | tclsh
-Recommends: puredata 
+Recommends: puredata
 Replaces: puredata (<< 0.43),
  puredata-core (<< 0.43.0-5)
 Breaks: puredata (<< 0.43),
  puredata-core (<< 0.43.0-5)
 Description: realtime computer music and graphics system - GUI
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
- graphical computations require separate packages such as gem (Graphics
- Environment for Multimedia) or pd-pdp (Pd Packet).
+ for audio and graphics processing.
  .
  This package provides the graphical user-interface for Pure Data.
  Most likely you will want to install "puredata-core" (or even "puredata")
@@ -69,14 +67,12 @@ Package: puredata-doc
 Section: doc
 Architecture: all
 Depends: ${misc:Depends}
-Recommends: puredata 
+Recommends: puredata
 Replaces: puredata (<< 0.43)
 Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - documentation
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
- graphical computations require separate packages such as gem (Graphics
- Environment for Multimedia) or pd-pdp (Pd Packet).
+ for audio and graphics processing.
  .
  This package provides the documentation for Pure Data.
  Most likely you will want to install "puredata" as well.
@@ -90,9 +86,7 @@ Replaces: puredata (<< 0.43)
 Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - development files
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
- graphical computations require separate packages such as gem (Graphics
- Environment for Multimedia) or pd-pdp (Pd Packet).
+ for audio and graphics processing.
  .
  This package provides the header-files for compiling externals (plugins) for
  puredata.
@@ -107,9 +101,7 @@ Replaces: puredata (<< 0.43)
 Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - utility programs
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
- graphical computations require separate packages such as gem (Graphics
- Environment for Multimedia) or pd-pdp (Pd Packet).
+ for audio and graphics processing.
  .
  This package provides utility applications for puredata, namely pdsend and
  pdreceive, for sending and rceiving FUDI over the net.
@@ -123,9 +115,7 @@ Replaces: puredata (<< 0.43)
 Breaks: puredata (<< 0.43)
 Description: realtime computer music and graphics system - extra files
  Pure Data (also known as Pd) is a real-time graphical programming environment
- for audio and graphics processing. Pd's audio functions are built-in;
- graphical computations require separate packages such as gem (Graphics
- Environment for Multimedia) or pd-pdp (Pd Packet).
+ for audio and graphics processing.
  .
  This package provides extra objects that come with Pd, e.g. for signal
  analysis (fiddle~, sigmund~, bonk~), expression evaluation (expr~) and more
