@@ -36,8 +36,6 @@ Package: puredata-core
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: pd
-Recommends: gem
-Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
 Replaces: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
 Breaks: puredata (<< 0.43), puredata-doc (<< 0.43.0-5)
 Description: realtime computer music and graphics system - core components
