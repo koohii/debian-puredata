@@ -16,7 +16,7 @@ Description: in order to allow multiple flavours of Pd
  AM_INIT_AUTOMAKE
 --- puredata.orig/src/s_main.c
 +++ puredata/src/s_main.c
-@@ -504,7 +504,7 @@
+@@ -500,7 +500,7 @@
  #else
      strncpy(sbuf, sbuf2, MAXPDSTRING-30);
      sbuf[MAXPDSTRING-30] = 0;

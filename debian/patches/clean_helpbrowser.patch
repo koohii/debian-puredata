@@ -19,7 +19,7 @@ Forward: https://sourceforge.net/tracker/?func=detail&atid=478072&aid=3296739&gr
 +    foreach item [lsort $helplist] {
 +        $current_listbox insert end $item
 +    }
-+ 
++
  	bind $current_listbox <Button-1> \
          [list ::helpbrowser::root_navigate %W %x %y]
      bind $current_listbox <Key-Return> \

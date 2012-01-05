@@ -14,4 +14,4 @@ Description: search /usr/lib/pd/extra/ for externals
 +    sys_staticpath = namelist_append(sys_staticpath, "/usr/lib/pd/extra", 0);
  }
  
- #ifdef MSW
+ #ifdef _WIN32

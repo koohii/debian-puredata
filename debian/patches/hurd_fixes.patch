@@ -41,7 +41,7 @@ Forward: https://sourceforge.net/tracker/?func=detail&aid=3297657&group_id=55736
  if HURD
 -pd_SOURCES += s_midi_dummy.c
 +libpdbindir = $(pkglibdir)/bin
-+libpdbin_DATA = 
++libpdbin_DATA =
 +libpdbin_PROGRAMS = pd-watchdog pd
 +# this flag has to have a single leading "-" for libtool, even though ld uses
 +# --export-dynamic, and libtool sends -Wl,--export-dynamic to ld...
