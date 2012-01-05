@@ -10,7 +10,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef MSW
+#ifdef _WIN32
 #include <io.h>
 #endif
 #include <fcntl.h>
@@ -530,7 +530,7 @@ done:
 
 #define SMALLMSG 5
 #define HUGEMSG 1000
-#ifdef MSW
+#ifdef _WIN32
 #include <malloc.h>
 #else
 #include <alloca.h>
@@ -741,7 +741,7 @@ broken:
 static int binbuf_doopen(char *s, int mode)
 {
     char namebuf[MAXPDSTRING];
-#ifdef MSW
+#ifdef _WIN32
     mode |= O_BINARY;
 #endif
     sys_bashfilename(s, namebuf);
@@ -917,6 +917,13 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
         sys_unixerror(fbuf);
         goto fail;
     }
+
+    if (fflush(f) != 0) 
+    {
+        sys_unixerror(fbuf);
+        goto fail;
+    }
+
     if (deleteit)
         binbuf_free(x);
     fclose(f);
@@ -1477,7 +1484,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     canvas_resume_dsp(dspstate);
 }
 
-void glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
+t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
 {
     t_pd *x = 0;
         /* even though binbuf_evalfile appears to take care of dspstate,
@@ -1487,8 +1494,12 @@ void glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
 
     int dspstate = canvas_suspend_dsp();
     binbuf_evalfile(name, dir);
-    while ((x != s__X.s_thing) && (x = s__X.s_thing))
+    while ((x != s__X.s_thing) && s__X.s_thing) 
+    {
+        x = s__X.s_thing;
         vmess(x, gensym("pop"), "i", 1);
+    }
     pd_doloadbang();
     canvas_resume_dsp(dspstate);
+    return x;
 }
