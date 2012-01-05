@@ -9,6 +9,4 @@ clean_helpbrowser.patch
 helpbrowser_puredata-doc.patch
 default_audio_api.patch
 default_midi_api.patch
-flush-to-disk.patch
-fix_segfault_with_DSP_loop.patch
 fix_typepunning.patch
