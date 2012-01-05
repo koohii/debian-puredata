@@ -1,12 +1,16 @@
-puredata (0.43.0-5) UNRELEASED; urgency=low
+puredata (0.43.1-1) UNRELEASED; urgency=low
 
   [ IOhannes m zmölnig ]
+
+  * Imported Upstream version 0.43.1
+  * Adjusted patches to upstream/0.43.1
+  * Removed debian/patches/ included in upstream
   * Remove puredata.preinst script (Closes: #639763)
   * Move 7.stuff to puredata-core package (Closes: #645041)
   * Install all patches into /usr/share/puredata
   * Refer to manual in /usr/share/puredata/
   * Move puredata.desktop to puredata-gui
-  * Fixe spelling of "Pure Data" in desktop entry
+  * Fixed spelling of "Pure Data" in desktop entry
   * puredata-* breaks/replaces puredata<0.43
   * puredata-gui now breaks/replaces older puredata-core
   * puredata-core now breaks/replaces older puredata-doc
@@ -14,7 +18,7 @@ puredata (0.43.0-5) UNRELEASED; urgency=low
   * Remove recommends/suggests from "puredata-core" (Closes: #652269)
   * Shortened descriptions of sub-packages
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Fri, 16 Dec 2011 10:07:08 +0100
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 05 Jan 2012 10:32:11 +0100
 
 puredata (0.43.0-4) unstable; urgency=low
 
