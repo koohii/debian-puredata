@@ -1,7 +1,6 @@
-puredata (0.43.1-1) UNRELEASED; urgency=low
+puredata (0.43.1-1) unstable; urgency=low
 
   [ IOhannes m zmölnig ]
-
   * Imported Upstream version 0.43.1
   * Adjusted patches to upstream/0.43.1
   * Removed debian/patches/ included in upstream
@@ -18,7 +17,10 @@ puredata (0.43.1-1) UNRELEASED; urgency=low
   * Remove recommends/suggests from "puredata-core" (Closes: #652269)
   * Shortened descriptions of sub-packages
 
- -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 05 Jan 2012 10:32:11 +0100
+  [ Paul Brossier ]
+  * Rebuild and upload package, kudus to IOhannes
+
+ -- Paul Brossier <piem@debian.org>  Fri, 06 Jan 2012 18:30:47 -0800
 
 puredata (0.43.0-4) unstable; urgency=low
 
