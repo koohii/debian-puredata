@@ -149,16 +149,32 @@ proper accesses to float/int unions.
              if (format == NS_FORMAT_LINEAR_16)
                  bytespersamp = 2;
              else if (format == NS_FORMAT_LINEAR_24)
-@@ -263,6 +268,8 @@
+@@ -263,6 +268,7 @@
          }
          else if (format == FORMAT_WAVE)     /* wave header */
          {
-+            t_wavechunk*wavechunk;
-+
++               t_wavechunk*wavechunk=(t_wavechunk *)buf;
                 /*  This is awful.  You have to skip over chunks,
                 except that if one happens to be a "fmt" chunk, you want to
                 find out the format from that one.  The case where the
-@@ -313,18 +320,19 @@
+@@ -282,13 +288,13 @@
+                     ((t_wavechunk *)buf)->wc_id[2],
+                     ((t_wavechunk *)buf)->wc_id[3]); */
+                 /* read chunks in loop until we get to the data chunk */
+-            while (strncmp(((t_wavechunk *)buf)->wc_id, "data", 4))
++            while (strncmp(wavechunk->wc_id, "data", 4))
+             {
+-                long chunksize = swap4(((t_wavechunk *)buf)->wc_size,
++                long chunksize = swap4(wavechunk->wc_size,
+                     swap), seekto = headersize + chunksize + 8, seekout;
+                 if (seekto & 1)     /* pad up to even number of bytes */
+                     seekto++;                
+-                if (!strncmp(((t_wavechunk *)buf)->wc_id, "fmt ", 4))
++                if (!strncmp(wavechunk->wc_id, "fmt ", 4))
+                 {
+                     long commblockonset = headersize + 8;
+                     seekout = lseek(fd, commblockonset, SEEK_SET);
+@@ -313,18 +319,19 @@
                      (int) sizeof(t_wavechunk))
                          goto badheader;
                  /* post("new chunk %c %c %c %c at %d",
@@ -183,7 +199,7 @@ proper accesses to float/int unions.
              headersize = 12;
              if (bytesread < 20)
                  goto badheader;
-@@ -335,28 +343,31 @@
+@@ -335,28 +342,31 @@
                  /* copy the first chunk header to beginnning of buffer. */
              memcpy(buf, buf + headersize, sizeof(t_datachunk));
                  /* read chunks in loop until we get to the data chunk */
@@ -224,7 +240,7 @@ proper accesses to float/int unions.
                      if (format == 16)
                          bytespersamp = 2;
                      else if (format == 24)
-@@ -371,7 +382,7 @@
+@@ -371,7 +381,7 @@
                          goto badheader;
                  headersize = seekto;
              }
@@ -233,7 +249,7 @@ proper accesses to float/int unions.
              headersize += sizeof(t_datachunk);
          }
      }
-@@ -906,7 +917,6 @@
+@@ -906,7 +916,6 @@
      unsigned char *sp, *sp2;
      t_sample *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -241,7 +257,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -986,10 +996,10 @@
+@@ -986,10 +995,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -256,7 +272,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -997,10 +1007,10 @@
+@@ -997,10 +1006,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -271,7 +287,7 @@ proper accesses to float/int unions.
                  }
              }
          }
-@@ -1014,7 +1024,6 @@
+@@ -1014,7 +1023,6 @@
      unsigned char *sp, *sp2;
      t_float *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -279,7 +295,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -1094,10 +1103,10 @@
+@@ -1094,10 +1102,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -294,7 +310,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -1105,10 +1114,10 @@
+@@ -1105,10 +1113,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
