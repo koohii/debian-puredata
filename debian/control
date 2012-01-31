@@ -23,7 +23,6 @@ Depends: ${misc:Depends},
  puredata-extra,
  puredata-utils,
  puredata-dev
-Provides: pd
 Recommends: gem
 Suggests: pd-csound, pd-pdp, pd-zexy, pd-aubio
 Description: realtime computer music and graphics system
