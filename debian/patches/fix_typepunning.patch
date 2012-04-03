@@ -249,7 +249,7 @@ proper accesses to float/int unions.
              headersize += sizeof(t_datachunk);
          }
      }
-@@ -906,7 +916,6 @@
+@@ -910,7 +920,6 @@
      unsigned char *sp, *sp2;
      t_sample *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -257,7 +257,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -986,10 +995,10 @@
+@@ -990,10 +999,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -272,7 +272,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -997,10 +1006,10 @@
+@@ -1001,10 +1010,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -287,7 +287,7 @@ proper accesses to float/int unions.
                  }
              }
          }
-@@ -1014,7 +1023,6 @@
+@@ -1018,7 +1027,6 @@
      unsigned char *sp, *sp2;
      t_float *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -295,7 +295,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -1094,10 +1102,10 @@
+@@ -1098,10 +1106,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -310,7 +310,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -1105,10 +1113,10 @@
+@@ -1109,10 +1117,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
