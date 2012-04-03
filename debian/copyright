@@ -52,11 +52,13 @@ extra/expr~:
   Copyright (C) 1994, 1995, 1998, 1999 by IRCAM-Centre Georges Pompidou,
     Paris, France.
 
-  expr~ is released under the GNU General Public License Version 2 or above:
+  expr~ is released under the GNU Lesser General Public License Version 3 or
+  above:
 
-  You are free to distribute this software under the terms of the GNU General
-  Public License. On Debian systems, the complete text of the GNU General Public
-  License can be found in the file `/usr/share/common-licenses/GPL-2'.
+  You are free to distribute this software under the terms of the GNU Lesser
+  General Public License. On Debian systems, the complete text of the GNU
+  Lesser General Public License can be found in the file
+  `/usr/share/common-licenses/LGPL-3'.
 
 src/d_fft_fftsg.c
 
