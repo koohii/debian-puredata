@@ -1,3 +1,16 @@
+puredata (0.43.2-1) UNRELEASED; urgency=low
+
+  * New upstream release
+
+  [ IOhannes m zmölnig ]
+  * src/d_soundfile.c: Fixing type-punning (Closes: #658074)
+  * "pd" is provided by "puredata-core" rather than "puredata" (Closes: #652383)
+  * [expr~] is now released under the LGPL
+  * Updated patches to new upstream release
+  * Bumped standards version to 3.9.3
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Tue, 03 Apr 2012 13:42:20 +0200
+
 puredata (0.43.1-1) unstable; urgency=low
 
   [ IOhannes m zmölnig ]
