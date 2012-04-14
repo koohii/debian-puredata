@@ -1,3 +1,9 @@
+puredata (0.43.2-2) unstable; urgency=low
+
+  * kFreeBSD endianness fixes (Closes: #668773)
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Sat, 14 Apr 2012 21:03:40 +0200
+
 puredata (0.43.2-1) unstable; urgency=low
 
   * New upstream release
