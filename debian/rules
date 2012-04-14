@@ -14,6 +14,10 @@ else
 endif
 archconfflags += --enable-jack
 
+ifeq ($(DEB_HOST_ARCH_OS),kfreebsd)
+  CFLAGS+=-D__BSD_VISIBLE
+endif
+
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
