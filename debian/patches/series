@@ -11,3 +11,4 @@ helpbrowser_puredata-doc.patch
 default_audio_api.patch
 default_midi_api.patch
 fix_typepunning.patch
+examplepatches.patch
