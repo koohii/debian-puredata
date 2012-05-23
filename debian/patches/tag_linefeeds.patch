@@ -1,0 +1,58 @@
+From: IOhannes m zmoelnig <zmoelnig@iem.at>
+Date: Mon, 27 Feb 2012 13:44:17 +0100
+Bug: http://sourceforge.net/tracker/?func=detail&aid=3494768&group_id=55736&atid=478072
+Subject: [PATCH] use tagged LF for verbose() and friends
+
+traditionally, verbose(), error(), bug(),... got their terminating LF by calling
+endpost() since endpost() will output the LF 'untagged' (agnostic of the
+log-level), this looks ugly when filtering-by-loglevel is applied on the
+gui-side (the contents gets filtered but the the LFs bypass the filter) this
+patch appens LF to the message and prints everything with the same loglevel.
+
+--- puredata.orig/src/s_print.c
++++ puredata/src/s_print.c
+@@ -212,9 +212,9 @@
+     va_start(ap, fmt);
+     vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+     va_end(ap);
++    strcat(buf, "\n");
+ 
+     doerror(NULL, buf);
+-    endpost();
+ }
+ 
+ void verbose(int level, const char *fmt, ...)
+@@ -229,9 +229,9 @@
+     va_start(ap, fmt);
+     vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+     va_end(ap);
+-    dologpost(NULL, level+4, buf);
++    strcat(buf, "\n");
+ 
+-    endpost();
++    dologpost(NULL, level, buf);
+ }
+ 
+     /* here's the good way to log errors -- keep a pointer to the
+@@ -253,9 +253,9 @@
+     va_start(ap, fmt);
+     vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+     va_end(ap);
++    strcat(buf, "\n");
+ 
+     doerror(object, buf);
+-    endpost();  
+ 
+     error_object = object;
+     if (!saidit)
+@@ -300,9 +300,9 @@
+     va_start(ap, fmt);
+     vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+     va_end(ap);
++    strcat(buf, "\n");
+ 
+     dobug(buf);
+-    endpost();
+ }
+ 
+     /* this isn't worked out yet. */
