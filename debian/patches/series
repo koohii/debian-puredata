@@ -14,3 +14,4 @@ fix_typepunning.patch
 examplepatches.patch
 utf8.patch
 tag_linefeeds.patch
+hardening_fixes.patch
