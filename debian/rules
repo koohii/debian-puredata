@@ -1,11 +1,16 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+## use hardening flags
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+## only link what is needed
 LDFLAGS+=-Wl,--as-needed
 
 DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
-archconfflags := 
+archconfflags :=
 
 ifeq ($(DEB_HOST_ARCH_OS),linux)
   archconfflags += --enable-alsa
@@ -49,7 +54,7 @@ ifneq (,$(findstring puredata-gui, $(shell dh_listpackages)))
 		chmod 0755 {} +
 endif
 
-override_dh_shlibdeps: 
+override_dh_shlibdeps:
 	dh_shlibdeps
 ifneq (,$(findstring puredata-extra, $(shell dh_listpackages)))
 	find debian/puredata-extra/ -type f -name "*.pd_linux" -exec \
