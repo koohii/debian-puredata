@@ -1,0 +1,34 @@
+Author: IOhannes m zmölnig
+Description: tabread4~ needs at least 4 samples to interpolate;
+ this patch adds guards in order to not access out-of-bound indices in the
+ table, in case the table is smaller than 4 samples.
+Forwarded: https://sourceforge.net/tracker/index.php?func=detail&aid=3536805&group_id=55736&atid=478072
+--- puredata.orig/src/d_array.c
++++ puredata/src/d_array.c
+@@ -300,6 +300,7 @@
+     int i;
+     
+     maxindex = x->x_npoints - 1;
++    if(maxindex<0) goto zero;
+     if (!buf) goto zero;
+ 
+     for (i = 0; i < n; i++)
+@@ -400,6 +401,7 @@
+     int i;
+     
+     maxindex = x->x_npoints - 3;
++    if(maxindex<0) goto zero;
+ 
+     if (!buf) goto zero;
+ 
+--- puredata.orig/src/d_soundfile.c
++++ puredata/src/d_soundfile.c
+@@ -1267,7 +1267,7 @@
+         
+         poswas = lseek(fd, 0, SEEK_CUR);
+         eofis = lseek(fd, 0, SEEK_END);
+-        if (poswas < 0 || eofis < 0)
++        if (poswas < 0 || eofis < 0 || eofis < poswas)
+         {
+             pd_error(x, "lseek failed");
+             goto done;
