@@ -1,3 +1,9 @@
+puredata (0.43.2-4) unstable; urgency=low
+
+  * Fixed out-of-bounds table access (Closes: #678306)
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 21 Jun 2012 09:27:29 +0200
+
 puredata (0.43.2-3) unstable; urgency=low
 
   [ IOhannes m zmoelnig ]
