@@ -1,8 +1,10 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-## use hardening flags
+## use hardening some flags
 DPKG_EXPORT_BUILDFLAGS = 1
+DEB_BUILD_MAINT_OPTIONS=hardening=+format,-fortify,+stackprotector,+relro
+export DEB_BUILD_MAINT_OPTIONS
 include /usr/share/dpkg/buildflags.mk
 
 ## only link what is needed
@@ -70,4 +72,3 @@ endif
 
 override_dh_compress:
 	dh_compress -X.pd -X.wav -X.aiff -X.txt
-
