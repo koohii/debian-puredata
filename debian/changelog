@@ -1,3 +1,10 @@
+puredata (0.43.2-5) UNRELEASED; urgency=low
+
+  * Disabled FORTIFY_SOURCE for now (Closes: #690410)
+  * Added lintian-overrides due to FORTIFY_SOURCE removal
+
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Mon, 04 Mar 2013 18:05:15 +0100
+
 puredata (0.43.2-4) unstable; urgency=low
 
   * Fixed out-of-bounds table access (Closes: #678306)
