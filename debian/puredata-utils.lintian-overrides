@@ -1,0 +1,3 @@
+## FORTIFY_SOURCE triggers spurious crashes
+## so it's disabled for now
+puredata-utils: hardening-no-fortify-functions
