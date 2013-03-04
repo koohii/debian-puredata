@@ -1,4 +1,4 @@
-puredata (0.43.2-5) UNRELEASED; urgency=low
+puredata (0.43.2-5) unstable; urgency=low
 
   * Disabled FORTIFY_SOURCE for now (Closes: #690410)
   * Added lintian-overrides due to FORTIFY_SOURCE removal
