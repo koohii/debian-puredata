@@ -136,7 +136,7 @@ proper accesses to float/int unions.
          swap = (bigendian != garray_ambigendian());
          if (format == FORMAT_NEXT)   /* nextstep header */
          {
--            uint32 param;
+-            uint32_t param;
 +            t_nextstep*nsbuf=(t_nextstep *)buf;
              if (bytesread < (int)sizeof(t_nextstep))
                  goto badheader;

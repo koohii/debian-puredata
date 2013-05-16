@@ -2,17 +2,6 @@ Author: IOhannes m zmölnig
 Descriptions: allow Pd to be built with hardening flags
  calls to printf() like functions should not use user-provided
  strings as format-strings
---- puredata.orig/src/g_readwrite.c
-+++ puredata/src/g_readwrite.c
-@@ -44,7 +44,7 @@
- static void canvas_readerror(int natoms, t_atom *vec, int message, 
-     int nline, char *s)
- {
--    error(s);
-+    error("%s", s);
-     startpost("line was:");
-     postatom(nline, vec + message);
-     endpost();
 --- puredata.orig/src/s_file.c
 +++ puredata/src/s_file.c
 @@ -128,7 +128,7 @@
