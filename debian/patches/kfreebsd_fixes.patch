@@ -3,7 +3,7 @@ Description: fixes configure-checks for kFreeBSD/GNU
 Forward: https://sourceforge.net/tracker/?func=detail&aid=3297657&group_id=55736&atid=478072
 --- puredata.orig/configure.ac
 +++ puredata/configure.ac
-@@ -32,7 +32,7 @@
+@@ -37,7 +37,7 @@
  	LDFLAGS="$LDFLAGS -L/sw/lib"
  	EXTERNAL_LDFLAGS="-bundle -undefined dynamic_lookup"
  	;;

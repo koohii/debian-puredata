@@ -8,7 +8,7 @@ in gcc, which (potentially) breaks Pd's byte-fuddling with pointer-casts like
 proper accesses to float/int unions.
 --- puredata.orig/src/d_math.c
 +++ puredata/src/d_math.c
-@@ -98,20 +98,26 @@
+@@ -90,20 +90,26 @@
  
  t_float q8_rsqrt(t_float f0)
  {
@@ -47,7 +47,7 @@ proper accesses to float/int unions.
      /* the old names are OK unless we're in IRIX N32 */
 --- puredata.orig/src/m_pd.h
 +++ puredata/src/m_pd.h
-@@ -64,9 +64,24 @@
+@@ -84,9 +84,24 @@
  #if !defined(PD_LONGINTTYPE)
  #define PD_LONGINTTYPE long
  #endif
@@ -74,7 +74,7 @@ proper accesses to float/int unions.
  typedef PD_LONGINTTYPE t_int;       /* pointer-size integer */
  typedef PD_FLOATTYPE t_float;       /* a float type at most the same size */
  typedef PD_FLOATTYPE t_floatarg;    /* float type for function calls */
-@@ -489,6 +504,10 @@
+@@ -516,6 +531,10 @@
  /* --------------- signals ----------------------------------- */
  
  typedef PD_FLOATTYPE t_sample;
@@ -85,9 +85,9 @@ proper accesses to float/int unions.
  #define MAXLOGSIG 32
  #define MAXSIGSIZE (1 << MAXLOGSIG)
  
-@@ -641,14 +660,26 @@
+@@ -668,14 +687,26 @@
  
- #if defined(__i386__) || defined(__x86_64__)
+ #if defined(__i386__) || defined(__x86_64__) || defined(__arm__)
  /* a test for NANs and denormals.  Should only be necessary on i386. */
 -#define PD_BADFLOAT(f) ((((*(unsigned int*)&(f))&0x7f800000)==0) || \
 -    (((*(unsigned int*)&(f))&0x7f800000)==0x7f800000))
@@ -120,9 +120,9 @@ proper accesses to float/int unions.
      /* get version number at run time */
 --- puredata.orig/src/d_soundfile.c
 +++ puredata/src/d_soundfile.c
-@@ -41,6 +41,11 @@
- typedef unsigned short uint16;
- typedef unsigned int uint32;
+@@ -43,6 +43,11 @@
+ 
+ /***************** soundfile header structures ************************/
  
 +typedef union _samplelong {
 +  t_sample f;
@@ -132,7 +132,7 @@ proper accesses to float/int unions.
  #define FORMAT_WAVE 0
  #define FORMAT_AIFF 1
  #define FORMAT_NEXT 2
-@@ -246,12 +251,12 @@
+@@ -241,12 +246,12 @@
          swap = (bigendian != garray_ambigendian());
          if (format == FORMAT_NEXT)   /* nextstep header */
          {
@@ -149,7 +149,7 @@ proper accesses to float/int unions.
              if (format == NS_FORMAT_LINEAR_16)
                  bytespersamp = 2;
              else if (format == NS_FORMAT_LINEAR_24)
-@@ -263,6 +268,7 @@
+@@ -258,6 +263,7 @@
          }
          else if (format == FORMAT_WAVE)     /* wave header */
          {
@@ -157,7 +157,7 @@ proper accesses to float/int unions.
                 /*  This is awful.  You have to skip over chunks,
                 except that if one happens to be a "fmt" chunk, you want to
                 find out the format from that one.  The case where the
-@@ -282,13 +288,13 @@
+@@ -277,13 +283,13 @@
                      ((t_wavechunk *)buf)->wc_id[2],
                      ((t_wavechunk *)buf)->wc_id[3]); */
                  /* read chunks in loop until we get to the data chunk */
@@ -174,7 +174,7 @@ proper accesses to float/int unions.
                  {
                      long commblockonset = headersize + 8;
                      seekout = lseek(fd, commblockonset, SEEK_SET);
-@@ -313,18 +319,19 @@
+@@ -308,18 +314,19 @@
                      (int) sizeof(t_wavechunk))
                          goto badheader;
                  /* post("new chunk %c %c %c %c at %d",
@@ -199,7 +199,7 @@ proper accesses to float/int unions.
              headersize = 12;
              if (bytesread < 20)
                  goto badheader;
-@@ -335,28 +342,31 @@
+@@ -330,28 +337,31 @@
                  /* copy the first chunk header to beginnning of buffer. */
              memcpy(buf, buf + headersize, sizeof(t_datachunk));
                  /* read chunks in loop until we get to the data chunk */
@@ -240,7 +240,7 @@ proper accesses to float/int unions.
                      if (format == 16)
                          bytespersamp = 2;
                      else if (format == 24)
-@@ -371,7 +381,7 @@
+@@ -366,7 +376,7 @@
                          goto badheader;
                  headersize = seekto;
              }
@@ -249,7 +249,7 @@ proper accesses to float/int unions.
              headersize += sizeof(t_datachunk);
          }
      }
-@@ -910,7 +920,6 @@
+@@ -904,7 +914,6 @@
      unsigned char *sp, *sp2;
      t_sample *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -257,7 +257,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -990,10 +999,10 @@
+@@ -984,10 +993,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -272,7 +272,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -1001,10 +1010,10 @@
+@@ -995,10 +1004,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -287,7 +287,7 @@ proper accesses to float/int unions.
                  }
              }
          }
-@@ -1018,7 +1027,6 @@
+@@ -1012,7 +1021,6 @@
      unsigned char *sp, *sp2;
      t_float *fp;
      int bytesperframe = bytespersamp * nchannels;
@@ -295,7 +295,7 @@ proper accesses to float/int unions.
      for (i = 0, sp = buf; i < nchannels; i++, sp += bytespersamp)
      {
          if (bytespersamp == 2)
-@@ -1098,10 +1106,10 @@
+@@ -1092,10 +1100,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {
@@ -310,7 +310,7 @@ proper accesses to float/int unions.
                  }
              }
              else
-@@ -1109,10 +1117,10 @@
+@@ -1103,10 +1111,10 @@
                  for (j = 0, sp2 = sp, fp=vecs[i] + onset;
                      j < nitems; j++, sp2 += bytesperframe, fp += spread)
                  {

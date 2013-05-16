@@ -2,7 +2,7 @@ Author: Paul Brossier <piem@debian.org>
 Description: do not overwrite user cflags, add them *after* hardcoded ones
 --- puredata.orig/configure.ac
 +++ puredata/configure.ac
-@@ -40,7 +40,7 @@
+@@ -45,7 +45,7 @@
  	if test "x${ANDROID}" = "xno"; then
  	 LINUX=yes
  	 portaudio=yes
