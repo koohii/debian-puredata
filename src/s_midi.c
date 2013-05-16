@@ -41,8 +41,9 @@ int midi_outhead, midi_outtail;
 t_midiqelem midi_inqueue[MIDIQSIZE];
 int midi_inhead, midi_intail;
 static double sys_midiinittime;
+#define API_DEFAULTMIDI 0
 
-int sys_midiapi = API_DEFAULT;
+int sys_midiapi = API_DEFAULTMIDI;
 
     /* this is our current estimate for at what "system" real time the
     current logical time's output should occur. */
@@ -500,7 +501,7 @@ void sys_get_midi_apis(char *buf)
 {
     int n = 0;
     strcpy(buf, "{ ");
-    sprintf(buf + strlen(buf), "{default-MIDI %d} ", API_DEFAULT); n++;
+    sprintf(buf + strlen(buf), "{OSS-MIDI %d} ", API_DEFAULTMIDI); n++;
 #ifdef USEAPI_ALSA
     sprintf(buf + strlen(buf), "{ALSA-MIDI %d} ", API_ALSA); n++;
 #endif
@@ -538,19 +539,21 @@ static void sys_save_midi_params(
 void sys_open_midi(int nmidiindev, int *midiindev,
     int nmidioutdev, int *midioutdev, int enable)
 {
+    if (enable)
+    {
 #ifdef USEAPI_ALSA
-  midi_alsa_init();
+        midi_alsa_init();
 #endif
 #ifdef USEAPI_OSS
-    midi_oss_init();
+        midi_oss_init();
 #endif
-    if (enable)
 #ifdef USEAPI_ALSA
-      if (sys_midiapi == API_ALSA)
-        sys_alsa_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
-      else
+        if (sys_midiapi == API_ALSA)
+            sys_alsa_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
+        else
 #endif /* ALSA */
-        sys_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
+            sys_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
+    }
     sys_save_midi_params(nmidiindev, midiindev,
         nmidioutdev, midioutdev);
 
@@ -616,36 +619,28 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform);
 void glob_midi_setapi(void *dummy, t_floatarg f)
 {
     int newapi = f;
-    if (newapi)
+    if (newapi == sys_midiapi)
     {
-        if (newapi == sys_midiapi)
-        {
-          //if (!midi_isopen())
-          //  s_reopen_midi();
-        }
-        else
-        {
+      //if (!midi_isopen())
+      //  s_reopen_midi();
+    }
+    else
+    {
 #ifdef USEAPI_ALSA
-          if (sys_midiapi == API_ALSA)
-              sys_alsa_close_midi();
-          else
+      if (sys_midiapi == API_ALSA)
+          sys_alsa_close_midi();
+      else
 #endif
-            sys_close_midi();
-          sys_midiapi = newapi;
-          /* bash device params back to default */
-          midi_nmidiindev = midi_nmidioutdev = 1;
-          //midi_midiindev[0] = midi_midioutdev[0] = DEFAULTMIDIDEV;
-          //midi_midichindev[0] = midi_midichoutdev[0] = SYS_DEFAULTCH;
-          sys_reopen_midi();
-        }
+          sys_close_midi();
+      sys_midiapi = newapi;
+      /* bash device params back to default */
+      midi_nmidiindev = midi_nmidioutdev = 1;
+      //midi_midiindev[0] = midi_midioutdev[0] = DEFAULTMIDIDEV;
+      //midi_midichindev[0] = midi_midichoutdev[0] = SYS_DEFAULTCH;
+      sys_reopen_midi();
+    }
 
-        glob_midi_properties(0, 0);
-    }
-    else //if (midi_isopen())
-    {
-        sys_close_midi();
-        //midi_state = 0;
-    }
+    glob_midi_properties(0, 0);
 }
 
 extern t_class *glob_pdobject;

@@ -39,10 +39,15 @@ a fat binary or an indication of the instruction set. */
 #ifdef __FreeBSD__
 static char sys_dllextent[] = ".b_i386", sys_dllextent2[] = ".pd_freebsd";
 #elif defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
+static char sys_dllextent2[] = ".pd_linux";
 # ifdef __x86_64__
-static char sys_dllextent[] = ".l_ia64", sys_dllextent2[] = ".pd_linux";
+static char sys_dllextent[] = ".l_ia64"; // this should be .l_x86_64 or .l_amd64
+# elif defined(__i386__) || defined(_M_IX86)
+static char sys_dllextent[] = ".l_i386";
+# elif defined(__arm__)
+static char sys_dllextent[] = ".l_arm";
 # else
-static char sys_dllextent[] = ".l_i386", sys_dllextent2[] = ".pd_linux";
+static char sys_dllextent[] = ".so";
 # endif
 #elif defined(__APPLE__)
 # ifndef MACOSX3
@@ -52,8 +57,8 @@ static char sys_dllextent[] = ".d_ppc", sys_dllextent2[] = ".pd_darwin";
 # endif
 #elif defined(_WIN32) || defined(__CYGWIN__)
 static char sys_dllextent[] = ".m_i386", sys_dllextent2[] = ".dll";
-#elif defined(ANDROID)
-static char sys_dllextent[] = ".l_arm", sys_dllextent2[] = ".pd_linux";
+#else
+static char sys_dllextent[] = ".so", sys_dllextent2[] = ".so";
 #endif
 
     /* maintain list of loaded modules to avoid repeating loads */
@@ -156,6 +161,18 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     if ((fd = canvas_open(canvas, filename, sys_dllextent2,
         dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
             goto gotone;
+#ifdef ANDROID
+    /* Android libs always have a 'lib' prefix, '.so' suffix and don't allow ~ */
+    char libname[MAXPDSTRING] = "lib";
+    strncat(libname, objectname, MAXPDSTRING - 4);
+    int len = strlen(libname);
+    if (libname[len-1] == '~' && len < MAXPDSTRING - 6) {
+        strcpy(libname+len-1, "_tilde");
+    }
+    if ((fd = canvas_open(canvas, libname, ".so",
+        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+            goto gotone;
+#endif
     return (0);
 gotone:
     close(fd);

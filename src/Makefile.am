@@ -6,7 +6,7 @@ pd_LDFLAGS =
 pdsend_CFLAGS = 
 pdreceive_CFLAGS = 
 pd_watchdog_CFLAGS = 
-LIBS = 
+LIBS = @LIBS@
 INCLUDES = @INCLUDES@
 
 SUFFIXES = .@EXTENSION@ .@SHARED_LIB@
@@ -43,6 +43,7 @@ EXTRA_DIST = CHANGELOG.txt notes.txt makefile.mingw
 # configurations per library
 if ALSA
 pd_CFLAGS += -DUSEAPI_ALSA
+pd_LDADD  += @ALSA_LIBS@
 pd_SOURCES += s_audio_alsa.c s_audio_alsamm.c s_midi_alsa.c
 endif
 
@@ -62,9 +63,9 @@ if JACK
 pd_CFLAGS += -DUSEAPI_JACK -DJACK_XRUN
 pd_SOURCES += s_audio_jack.c
 if MACOSX
-LIBS += -weak_framework Jackmp
+pd_LDFLAGS += -weak_framework Jackmp
 else
-LIBS += -ljack
+pd_LDADD += @JACK_LIBS@
 endif
 endif
 
@@ -78,19 +79,19 @@ endif
 endif
 
 if PORTAUDIO
-pd_CFLAGS += -DUSEAPI_PORTAUDIO  -I../portaudio/include
-pd_LDADD += ../portaudio/libportaudio.la
+pd_CFLAGS += -DUSEAPI_PORTAUDIO  -I$(top_srcdir)/portaudio/include
+pd_LDADD += $(top_builddir)/portaudio/lib/libportaudio.la
 pd_SOURCES += s_audio_pa.c s_audio_paring.c
 endif
 
 # ASIO needs to go after PORTAUDIO in order for it to link properly
 if ASIO
-pd_LDADD += ../asio/libasio.la
+pd_LDADD += $(top_builddir)/asio/libasio.la
 endif
 
 if PORTMIDI
-INCLUDES += -I../portmidi/pm_common -I../portmidi/porttime
-pd_LDADD += ../portmidi/libportmidi.la
+INCLUDES += -I$(top_srcdir)/portmidi/pm_common -I$(top_srcdir)/portmidi/porttime
+pd_LDADD += $(top_builddir)/portmidi/libportmidi.la
 pd_SOURCES += s_midi_pm.c
 endif
 

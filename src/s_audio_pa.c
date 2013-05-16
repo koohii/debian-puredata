@@ -4,14 +4,21 @@
 
 /* this file calls Ross Bencina's and Phil Burk's Portaudio package.  It's
     the main way in for Mac OS and, with Michael Casey's help, also into
-    ASIO in Windows. */
+    ASIO in Windows.
+    
+    Both blocking and non-blocking call styles are supported.  If non-blocking
+    is requested, either we call portaudio in non-blocking mode, or else we
+    call portaudio in callback mode and manage our own FIFO se we can offer
+    Pd "blocking" I/O calls.  To do the latter we define FAKEBLOCKING; this
+    works better in MAXOSX (gets 40 msec lower latency!) and might also in
+    Windows.  If FAKEBLOCKING is defined we can choose between two methods
+    for waiting on the (presumebly other-thread) I/O to complete, either
+    correct thread synchronization (by defining THREADSIGNAL) or just sleeping
+    and polling; the latter seems to work better so far.
+*/
 
 /* dolist...  
-    put in a real FIFO (compare to Zmoelnig and keep FIFO if OK)
     switch to usleep in s_inter.c
-    try blocking and nonblocking calls here
-    for blocking, offer pthreads or usleep method
-        (see if pthreads is still inefficient with FIFO?)
 */
 
 #include "m_pd.h"
@@ -19,16 +26,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 #include <portaudio.h>
-#ifdef _WIN32
-#include <malloc.h>
-#include <windows.h>
-#else
-#include <alloca.h>
+
+#ifndef _WIN32          /* for the "dup2" workaround -- do we still need it? */
 #include <unistd.h>
 #endif
-#include "s_audio_paring.h"
+
+#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
+# include <alloca.h>        /* linux, mac, mingw, cygwin */
+#elif defined _MSC_VER
+# include <malloc.h>        /* MSVC */
+#else
+# include <stddef.h>        /* BSDs for example */
+#endif                      /* end alloca() ifdef nonsense */
+
+
+#if defined(__APPLE__)
+#define FAKEBLOCKING
+#endif
+
+/* define this to enable thread signaling instead of polling */
+/* #define THREADSIGNAL */
 
     /* LATER try to figure out how to handle default devices in portaudio;
     the way s_audio.c handles them isn't going to work here. */
@@ -41,18 +59,23 @@ static int pa_inchans, pa_outchans;
 static float *pa_soundin, *pa_soundout;
 static t_audiocallback pa_callback;
 
+static int pa_started;
+static int pa_nbuffers;
+static int pa_dio_error;
+
+#ifdef FAKEBLOCKING
+#include "s_audio_paring.h"
 static float *pa_outbuf;
 static sys_ringbuf pa_outring;
 static float *pa_inbuf;
 static sys_ringbuf pa_inring;
-static int pa_started = 0;
-static int pa_dio_error;
-
+#ifdef THREADSIGNAL
+#include <pthread.h>
 pthread_mutex_t pa_mutex;
 pthread_cond_t pa_sem;
+#endif /* THREADSIGNAL */
+#endif  /* FAKEBLOCKING */
 
-/* define this to enable thread signaling instead of polling */
-/* #define THREADSIGNAL */
 
 static void pa_init(void)
 {
@@ -129,8 +152,10 @@ static int pa_lowlevel_callback(const void *inputBuffer,
     return 0;
 }
 
-    /* callback for "non-callback" case where we communicate with the
-    main thread via FIFO.  Here we first read the sudio output FIFO (which
+#ifdef FAKEBLOCKING
+    /* callback for "non-callback" case in which we actualy open portaudio
+    in callback mode but fake "blocking mode". We communicate with the
+    main thread via FIFO.  First read the audio output FIFO (which
     we sync on, not waiting for it but supplying zeros to the audio output if
     there aren't enough samples in the FIFO when we are called), then write
     to the audio input FIFO.  The main thread will wait for the input fifo.
@@ -190,6 +215,7 @@ static int pa_fifo_callback(const void *inputBuffer,
 #endif
     return 0;
 }
+#endif /* FAKEBLOCKING */
 
 PaError pa_open_callback(double sampleRate, int inchannels, int outchannels,
     int framesperbuf, int nbuffers, int indeviceno, int outdeviceno, PaStreamCallback *callbackfn)
@@ -205,18 +231,18 @@ PaError pa_open_callback(double sampleRate, int inchannels, int outchannels,
     instreamparams.device = indeviceno;
     instreamparams.channelCount = inchannels;
     instreamparams.sampleFormat = paFloat32;
-    instreamparams.suggestedLatency = 0;        /* was nbuffers*framesperbuf/sampleRate */
+    instreamparams.suggestedLatency = nbuffers*framesperbuf/sampleRate;
     instreamparams.hostApiSpecificStreamInfo = 0;
     
     outstreamparams.device = outdeviceno;
     outstreamparams.channelCount = outchannels;
     outstreamparams.sampleFormat = paFloat32;
-    outstreamparams.suggestedLatency = 0;
+    outstreamparams.suggestedLatency = nbuffers*framesperbuf/sampleRate;;
     outstreamparams.hostApiSpecificStreamInfo = 0;
 
-    if(inchannels>0 && indeviceno >= 0)
+    if( inchannels>0 && indeviceno >= 0)
         p_instreamparams=&instreamparams;
-    if(outchannels>0 && outdeviceno >= 0)
+    if( outchannels>0 && outdeviceno >= 0)
         p_outstreamparams=&outstreamparams;
 
     err=Pa_IsFormatSupported(p_instreamparams, p_outstreamparams, sampleRate);
@@ -259,7 +285,6 @@ PaError pa_open_callback(double sampleRate, int inchannels, int outchannels,
         if (paFormatIsSupported != err)
         goto error;
     }
-
     err = Pa_OpenStream(
               &pa_stream,
               p_instreamparams,
@@ -351,17 +376,20 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
         post("input device %d, channels %d", pa_indev, inchans);
         post("output device %d, channels %d", pa_outdev, outchans);
         post("framesperbuf %d, nbufs %d", framesperbuf, nbuffers);
+        post("rate %d", rate);
     }
     pa_inchans = sys_inchannels = inchans;
     pa_outchans = sys_outchannels = outchans;
     pa_soundin = soundin;
     pa_soundout = soundout;
 
+#ifdef FAKEBLOCKING
     if (pa_inbuf)
         free(pa_inbuf), pa_inbuf = 0;
     if (pa_outbuf)
         free(pa_outbuf), pa_outbuf = 0;
-    
+#endif
+
     if (! inchans && !outchans)
         return (0);
     
@@ -373,6 +401,7 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
     }
     else
     {
+#ifdef FAKEBLOCKING
         if (pa_inchans)
         {
             pa_inbuf = malloc(nbuffers*framesperbuf*pa_inchans*sizeof(float));
@@ -388,13 +417,19 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
         }
         err = pa_open_callback(rate, inchans, outchans,
             framesperbuf, nbuffers, pa_indev, pa_outdev, pa_fifo_callback);
+#else
+        err = pa_open_callback(rate, inchans, outchans,
+            framesperbuf, nbuffers, pa_indev, pa_outdev, 0);
+#endif
     }
+    pa_started = 0;
+    pa_nbuffers = nbuffers;
     if ( err != paNoError ) 
     {
         fprintf(stderr, "Error number %d opening portaudio stream\n",
             err); 
         fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
-        Pa_Terminate();
+        /* Pa_Terminate(); */
         return (1);
     }
     else if (sys_verbose)
@@ -410,11 +445,12 @@ void pa_close_audio( void)
         Pa_CloseStream(pa_stream);
     }
     pa_stream = 0;
+#ifdef FAKEBLOCKING
     if (pa_inbuf)
         free(pa_inbuf), pa_inbuf = 0;
     if (pa_outbuf)
         free(pa_outbuf), pa_outbuf = 0;
-    
+#endif
 }
 
 int pa_send_dacs(void)
@@ -424,25 +460,15 @@ int pa_send_dacs(void)
     float *conversionbuf;
     int j, k;
     int rtnval =  SENDDACS_YES;
-    int timenow;
-    int timeref = sys_getrealtime();
-    if (!sys_inchannels && !sys_outchannels)
+#ifndef FAKEBLOCKING
+    double timebefore;
+#endif /* FAKEBLOCKING */
+    if (!sys_inchannels && !sys_outchannels || !pa_stream)
         return (SENDDACS_NO); 
-#if CHECKFIFOS
-    if (sys_outchannels * sys_ringbuf_GetReadAvailable(&pa_inring) !=   
-        sys_inchannels * sys_ringbuf_GetWriteAvailable(&pa_outring))
-            fprintf(stderr, "warning (2): in and out rings unequal  (%d, %d)\n",
-                sys_ringbuf_GetReadAvailable(&pa_inring),
-                    sys_ringbuf_GetWriteAvailable(&pa_outring));
-#endif
     conversionbuf = (float *)alloca((sys_inchannels > sys_outchannels?
         sys_inchannels:sys_outchannels) * DEFDACBLKSIZE * sizeof(float));
-    if (pa_dio_error)
-    {
-        sys_log_error(ERR_RESYNC);
-        pa_dio_error = 0;
-    }
 
+#ifdef FAKEBLOCKING
     if (!sys_inchannels)    /* if no input channels sync on output */
     {
 #ifdef THREADSIGNAL
@@ -450,15 +476,18 @@ int pa_send_dacs(void)
 #endif
         while (sys_ringbuf_GetWriteAvailable(&pa_outring) <
             (long)(sys_outchannels * DEFDACBLKSIZE * sizeof(float)))
+        {
+            rtnval = SENDDACS_SLEPT;
 #ifdef THREADSIGNAL
-                pthread_cond_wait(&pa_sem, &pa_mutex);
+            pthread_cond_wait(&pa_sem, &pa_mutex);
 #else
 #ifdef _WIN32
-                Sleep(1);
+            Sleep(1);
 #else
-                usleep(1000);
+            usleep(1000);
 #endif /* _WIN32 */
 #endif /* THREADSIGNAL */
+        }
 #ifdef THREADSIGNAL
         pthread_mutex_unlock(&pa_mutex);
 #endif
@@ -481,21 +510,22 @@ int pa_send_dacs(void)
 #endif
         while (sys_ringbuf_GetReadAvailable(&pa_inring) <
             (long)(sys_inchannels * DEFDACBLKSIZE * sizeof(float)))
+        {
+            rtnval = SENDDACS_SLEPT;
 #ifdef THREADSIGNAL
-                pthread_cond_wait(&pa_sem, &pa_mutex);
+            pthread_cond_wait(&pa_sem, &pa_mutex);
 #else
 #ifdef _WIN32
-                Sleep(1);
+            Sleep(1);
 #else
-                usleep(1000);
+            usleep(1000);
 #endif /* _WIN32 */
 #endif /* THREADSIGNAL */
+        }
 #ifdef THREADSIGNAL
         pthread_mutex_unlock(&pa_mutex);
 #endif
     }
-    pa_started = 1;
-
     if (sys_inchannels)
     {
         sys_ringbuf_Read(&pa_inring, conversionbuf,
@@ -507,12 +537,44 @@ int pa_send_dacs(void)
                         *fp = *fp3;
     }
 
-    if ((timenow = sys_getrealtime()) - timeref > 0.002)
+#else /* FAKEBLOCKING */
+    timebefore = sys_getrealtime();
+        /* write output */
+    if (sys_outchannels)
+    {
+        if (!pa_started)
+        {
+            memset(conversionbuf, 0,
+                sys_outchannels * DEFDACBLKSIZE * sizeof(float));
+            for (j = 0; j < pa_nbuffers-1; j++)
+                Pa_WriteStream(pa_stream, conversionbuf, DEFDACBLKSIZE);
+        }
+        for (j = 0, fp = sys_soundout, fp2 = conversionbuf;
+            j < sys_outchannels; j++, fp2++)
+                for (k = 0, fp3 = fp2; k < DEFDACBLKSIZE;
+                    k++, fp++, fp3 += sys_outchannels)
+                        *fp3 = *fp;
+        Pa_WriteStream(pa_stream, conversionbuf, DEFDACBLKSIZE);
+    }
+
+    if (sys_inchannels)
+    {
+        Pa_ReadStream(pa_stream, conversionbuf, DEFDACBLKSIZE);
+        for (j = 0, fp = sys_soundin, fp2 = conversionbuf;
+            j < sys_inchannels; j++, fp2++)
+                for (k = 0, fp3 = fp2; k < DEFDACBLKSIZE;
+                    k++, fp++, fp3 += sys_inchannels)
+                        *fp = *fp3;
+    }
+    if (sys_getrealtime() - timebefore > 0.002)
     {
         rtnval = SENDDACS_SLEPT;
     }
+#endif /* FAKEBLOCKING */
+    pa_started = 1;
+
     memset(sys_soundout, 0, DEFDACBLKSIZE*sizeof(t_sample)*sys_outchannels);
-    return rtnval;
+    return (rtnval);
 }
 
 void pa_listdevs(void)     /* lifted from pa_devs.c in portaudio */
