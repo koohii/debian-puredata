@@ -1,9 +1,14 @@
 AC_PREREQ(2.59)
-AC_INIT(pd,0.43.0)
+AC_INIT(pd,0.44.3)
 AC_CONFIG_SRCDIR(src/m_pd.c)
 AC_CONFIG_AUX_DIR([m4/config])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4/generated])
+
+if test -d "$srcdir/portaudio"; then
+  AC_CONFIG_SUBDIRS([portaudio])
+fi
+
 
 AC_CANONICAL_HOST
 
@@ -53,7 +58,7 @@ case $host in
 #        to make the final linking phase use g++
 #		asio=yes
 	portaudio=yes
-	CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer"
+	CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer -DWINVER=0x0501 -D_WIN32_WINNT=0x0501"
 # ASIO is a C++ library, so if its included, then use g++ to build
 	CC=g++
 	EXTERNAL_CFLAGS="-mms-bitfields"
@@ -108,6 +113,8 @@ AC_SUBST(INCLUDES)
 AC_SUBST(EXTERNAL_EXTENSION)
 AC_SUBST(EXTERNAL_CFLAGS)
 AC_SUBST(EXTERNAL_LDFLAGS)
+AC_SUBST([ALSA_LIBS])
+AC_SUBST([JACK_LIBS])
 
 dnl Checks for libraries.
 AC_CHECK_LIB([dl], [dlopen])
@@ -157,7 +164,7 @@ AC_ARG_ENABLE([alsa],
 		[do not use ALSA audio driver])],
     [alsa=$enableval], [alsa=yes])
 AS_IF([test x$alsa = xyes], [
-    AC_CHECK_LIB(asound,snd_pcm_info,LIBS="$LIBS -lasound",alsa=no)])
+    AC_CHECK_LIB(asound,snd_pcm_info,ALSA_LIBS="-lasound",alsa=no)])
 AM_CONDITIONAL(ALSA, test x$alsa = xyes)
 
 dnl ASIO
@@ -181,8 +188,8 @@ dnl this is set in src/Makefile.am based on the JACK var
 AS_IF([test x$MACOSX != xyes], [
     AS_IF([test x$jack = xyes], [
         AC_CHECK_LIB(rt,shm_open,LIBS="$LIBS -lrt")
-        AC_CHECK_LIB(jack,jack_set_xrun_callback,LIBS="$LIBS -ljack";jack=xrun)
-        AC_CHECK_LIB(jack,jack_set_error_function,LIBS="$LIBS -ljack";jack=yes,
+        AC_CHECK_LIB(jack,jack_set_xrun_callback,JACK_LIBS="-ljack";jack=xrun)
+        AC_CHECK_LIB(jack,jack_set_error_function,JACK_LIBS="-ljack";jack=yes,
 	              jack=no)])])
 AM_CONDITIONAL(JACK, test x$jack = xyes)
 
@@ -240,7 +247,6 @@ AM_CONDITIONAL(MSGFMT, test x$HAVE_MSGFMT = xyes)
 AC_CONFIG_FILES([Makefile
                 asio/Makefile
                 man/Makefile
-                portaudio/Makefile
                 portmidi/Makefile
                 tcl/Makefile
                 po/Makefile

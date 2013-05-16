@@ -1,23 +1,17 @@
-# On Mac OS X, this needs to be defined to enable dlopen and weak linking
-# support.  Its safe on other platforms since gcc only checks this env var on
-# Apple's gcc.  <hans@at.or.at>
-export MACOSX_DEPLOYMENT_TARGET = 10.3
-
 VPATH = ../obj:./
 OBJ_DIR = ../obj
 BIN_DIR = ../bin
 PDEXEC = $(BIN_DIR)/pd
-EXT= @EXT@
-GUINAME= @GUINAME@
+EXT= pd_linux
+ALSA=true
+OSS=true
 
-prefix = @prefix@
-exec_prefix = @exec_prefix@
-bindir = @bindir@
-includedir = @includedir@
-libdir = @libdir@
-mandir = @mandir@
-
-GFLAGS = -DINSTALL_PREFIX=\"$(prefix)\"
+prefix = /usr/local
+exec_prefix = ${prefix}
+bindir = ${exec_prefix}/bin
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
 
 # varibles to match packages/Makefile.buildlayout so that they can be easily
 # overridden when building Pd-extended builds. <hans@at.or.at>
@@ -26,27 +20,42 @@ pddocdir = $(libpddir)/doc
 libpdbindir = $(libpddir)/bin
 libpdtcldir = $(libpddir)/tcl
 
-CPPFLAGS = @CPPFLAGS@
-MORECFLAGS = @MORECFLAGS@
-GINCLUDE = $(CPPFLAGS) @GUIFLAGS@
-GLIB = @LIBS@
-
-LDFLAGS = @LDFLAGS@
-LIB =  @PDLIB@
-
-WARN_CFLAGS = -Wall -W -Wstrict-prototypes \
+CPPFLAGS = -DPD -DHAVE_LIBDL -DHAVE_UNISTD_H -DHAVE_ALLOCA_H \
+    -DPDGUIDIR=\"tcl/\" \
+    -D_LARGEFILE64_SOURCE -DINSTALL_PREFIX=\"$(prefix)\" \
+    -Wall -W -Wstrict-prototypes \
     -Wno-unused -Wno-parentheses -Wno-switch
-ARCH_CFLAGS = -DPD 
 
-CFLAGS = @CFLAGS@ $(ARCH_CFLAGS) $(WARN_CFLAGS) $(CPPFLAGS) $(MORECFLAGS)
+MORECFLAGS = -O6 -fno-strict-aliasing -ffast-math -funroll-loops \
+    -fomit-frame-pointer 
 
-# the sources
+LDFLAGS = -Wl,-export-dynamic
+LIB =   -ldl -lm -lpthread
 
-SYSSRC += @SYSSRC@
+SYSSRC = s_midi_oss.c d_fft_mayer.c d_fftroutine.c
 
-ASIOSRC = @ASIOSRC@
+# conditionally add code and flags for various audio APIs
+ifdef ALSA
+CPPFLAGS += -DUSEAPI_ALSA
+SYSSRC += s_audio_alsa.c s_audio_alsamm.c s_midi_alsa.c
+LIB += -lasound
+endif
+ifdef JACK
+CPPFLAGS += -DUSEAPI_JACK
+SYSSRC += s_audio_jack.c
+LIB += -ljack
+endif
+ifdef OSS
+CPPFLAGS += -DUSEAPI_OSS
+SYSSRC += s_audio_oss.c
+endif
+ifdef PA
+CPPFLAGS += -DUSEAPI_PORTAUDIO
+SYSSRC += s_audio_pa.c
+LIB += -lportaudio
+endif
 
-ASIOOBJ = $(ASIOSRC:.cpp=.o)
+CFLAGS = $(CPPFLAGS) $(MORECFLAGS)
 
 SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_scalar.c g_traversal.c g_guiconnect.c g_readwrite.c g_editor.c \
@@ -84,79 +93,48 @@ endif
 #  ------------------ targets ------------------------------------
 #
 
-.PHONY: pd gui externs all
+.PHONY: pd externs all depend
 
-all: pd $(BIN_DIR)/pd-watchdog gui $(BIN_DIR)/pdsend \
-    $(BIN_DIR)/pdreceive externs
+all: pd $(BIN_DIR)/pd-watchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive externs
 
-bin: pd $(BIN_DIR)/pd-watchdog gui $(BIN_DIR)/pdsend \
-    $(BIN_DIR)/pdreceive
+bin: pd $(BIN_DIR)/pd-watchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive
 
 $(OBJ) : %.o : %.c
 	$(CC) $(CFLAGS) $(GFLAGS) $(INCLUDE) -c -o $(OBJ_DIR)/$*.o $*.c 
-
-$(GOBJ) : %.o : %.c
-	$(CC) $(CFLAGS) $(GFLAGS) $(GINCLUDE) -c -o $(OBJ_DIR)/$*.o $*.c 
-
-$(ASIOOBJ): %.o : %.cpp
-	$(CXX) $(CFLAGS) $(INCLUDE) -c -o $(OBJ_DIR)/$*.o $*.cpp
 
 pd: $(PDEXEC)
 
 pd-watchdog: $(BIN_DIR)/pd-watchdog
 
-$(BIN_DIR):
-	test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
-
-$(BIN_DIR)/pd-watchdog: s_watchdog.c $(BIN_DIR)
+$(BIN_DIR)/pd-watchdog: $(BIN_DIR) s_watchdog.c
 	$(CC) $(CFLAGS) $(STRIPFLAG) -o $(BIN_DIR)/pd-watchdog s_watchdog.c
 
-$(BIN_DIR)/pdsend: u_pdsend.c $(BIN_DIR)
+$(BIN_DIR)/pdsend: $(BIN_DIR) u_pdsend.c
 	$(CC) $(CFLAGS)  $(STRIPFLAG) -o $(BIN_DIR)/pdsend u_pdsend.c
 
-$(BIN_DIR)/pdreceive: u_pdreceive.c $(BIN_DIR)
+$(BIN_DIR)/pdreceive: $(BIN_DIR) u_pdreceive.c
 	$(CC) $(CFLAGS)  $(STRIPFLAG) -o $(BIN_DIR)/pdreceive u_pdreceive.c
 
-$(PDEXEC): $(OBJ) $(BIN_DIR)
+$(PDEXEC): $(BIN_DIR) $(OBJ_DIR) $(OBJ)
 	cd ../obj;  $(CC) $(LDFLAGS) $(DBG_CFLAGS) -o $(PDEXEC) $(OBJ) $(LIB)
 
-#this is for Mac OSX only...
-$(BIN_DIR)/libPdTcl.dylib: $(GOBJ) $(GSRC)
-	cd ../obj && $(CC) $(CFLAGS) -dynamiclib -read_only_relocs warning  \
-		-o $(BIN_DIR)/libPdTcl.dylib $(GOBJ)  \
-		-F@TCLTK_FRAMEWORKS_PATH@ \
-		-framework Tcl  -framework Tk  -framework System  \
-		-Wl,-install_name,@executable_path/../Resources/bin/libPdTcl.dylib
-	install_name_tool -change @TCLTK_FRAMEWORKS_PATH@/Tcl.framework/Versions/8.4/Tcl\
-		 @executable_path/../Frameworks/Tcl.framework/Versions/8.4/Tcl \
-		 -change @TCLTK_FRAMEWORKS_PATH@/Tk.framework/Versions/8.4/Tk \
-		 @executable_path/../Frameworks/Tk.framework/Versions/8.4/Tk \
-		../bin/libPdTcl.dylib
-
-# this is for Windows/MinGW (only?)
-$(BIN_DIR)/pdtcl.dll: $(GOBJ)
-	cd $(BIN_DIR); dllwrap --export-all-symbols --output-def pdtcl.def \
-	--output-lib=pdtcl.a --dllname=$(GUINAME) $(OBJ_DIR)/t_tkcmd.o $(LIB) $(GLIB)
-	strip --strip-unneeded $(BIN_DIR)/pdtcl.dll
-
 externs: 
-	make -C ../extra/bonk~    @EXTERNTARGET@
-	make -C ../extra/choice   @EXTERNTARGET@
-	make -C ../extra/expr~    @EXTERNTARGET@
-	make -C ../extra/fiddle~  @EXTERNTARGET@
-	make -C ../extra/loop~    @EXTERNTARGET@
-	make -C ../extra/lrshift~ @EXTERNTARGET@
-	make -C ../extra/pique    @EXTERNTARGET@
-	make -C ../extra/sigmund~ @EXTERNTARGET@
-	make -C ../extra/pd~      @EXTERNTARGET@
-	make -C ../extra/stdout   @EXTERNTARGET@
+	make -C ../extra/bonk~    
+	make -C ../extra/choice   
+	make -C ../extra/expr~    
+	make -C ../extra/fiddle~  
+	make -C ../extra/loop~    
+	make -C ../extra/lrshift~ 
+	make -C ../extra/pique    
+	make -C ../extra/sigmund~ 
+	make -C ../extra/pd~      
+	make -C ../extra/stdout   
 
-BINARYMODE=@binarymode@
+BINARYMODE=-m755
 
 ABOUT_FILE=$(DESTDIR)$(pddocdir)/1.manual/1.introduction.txt
 install:  all
 	install -d $(DESTDIR)$(libpdbindir)
-	-install $(BIN_DIR)/$(GUINAME) $(DESTDIR)$(libpdbindir)/$(GUINAME)
 	install $(BIN_DIR)/pd-watchdog $(DESTDIR)$(libpdbindir)/pd-watchdog
 	install -d $(DESTDIR)$(bindir)
 	install $(BINARYMODE) $(PDEXEC) $(DESTDIR)$(bindir)/pd
@@ -219,7 +197,13 @@ tags: $(SRC) $(GSRC); ctags *.[ch]
 
 depend: makefile.dependencies
 
-makefile.dependencies: makefile
+$(OBJ_DIR):
+	test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
+
+makefile.dependencies: $(SRC)
 	$(CC) $(CPPFLAGS) -M $(SRC) > makefile.dependencies
 
 uninstall:

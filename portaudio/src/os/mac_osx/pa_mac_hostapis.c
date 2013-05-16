@@ -62,24 +62,26 @@ extern "C"
 
 PaUtilHostApiInitializer *paHostApiInitializers[] =
 {
-#ifdef PA_USE_COREAUDIO
+#if PA_USE_COREAUDIO
     PaMacCore_Initialize,
 #endif
     
-#ifdef PA_USE_SM
+#if PA_USE_SM
     PaMacSm_Initialize,
 #endif
     
-#ifdef PA_USE_JACK
+#if PA_USE_JACK
     PaJack_Initialize,
 #endif
 
-#ifdef PA_USE_ASIO
+#if PA_USE_ASIO
     PaMacAsio_Initialize,
 #endif
     
+#if PA_USE_SKELETON
     PaSkeleton_Initialize, /* just for testing */
-    
+#endif
+
     0   /* NULL terminated array */
 };
 
