@@ -1,6 +1,15 @@
-puredata (0.44.3-1) UNRELEASED; urgency=low
+puredata (0.44.3-1) unstable; urgency=low
 
   * New upstream release.
+
+  [ IOhannes m zmölnig ]
+  * Imported Upstream version 0.44.3
+  * Adjusted debian/patches to new upstream
+  * Bumped standards version to 3.9.4
+  * Fixed misspellings in binaries
+  * Vcs-* fields should point to anonscm.debian.org
+  * Added keywords to the desktop file
+  * Use the system's port{audio,midi} libs
 
  -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 16 May 2013 16:47:19 +0200
 
