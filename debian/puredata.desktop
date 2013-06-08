@@ -14,3 +14,4 @@ Exec=/usr/lib/puredata/tcl/pd-gui.tcl
 Terminal=false
 Categories=AudioVideo;Audio;
 MimeType=text/x-puredata;text/x-maxmsp;
+Keywords=Audio;Video;Programming;Synthesis;Analysis
