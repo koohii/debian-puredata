@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 7.0.50~),
  gettext,
  libasound2-dev [linux-any],
  libjack-dev
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 Homepage: http://puredata.info
 Vcs-Git: git://git.debian.org/collab-maint/puredata.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/puredata.git;a=summary
