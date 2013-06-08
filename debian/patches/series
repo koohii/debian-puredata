@@ -11,3 +11,4 @@ default_midi_api.patch
 fix_typepunning.patch
 examplepatches.patch
 hardening_fixes.patch
+fix_spelling.patch
