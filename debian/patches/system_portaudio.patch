@@ -41,7 +41,7 @@ Description: use system installation of portaudio/portmidi
  AC_CANONICAL_HOST
  
  # you will need to install iPhone XCode on Mac OS X to use this:
-@@ -247,7 +242,6 @@
+@@ -251,7 +246,6 @@
  AC_CONFIG_FILES([Makefile
                  asio/Makefile
                  man/Makefile
@@ -51,7 +51,7 @@ Description: use system installation of portaudio/portmidi
                  src/Makefile
 --- puredata.orig/src/Makefile.am
 +++ puredata/src/Makefile.am
-@@ -79,8 +79,8 @@
+@@ -85,8 +85,8 @@
  endif
  
  if PORTAUDIO
@@ -62,7 +62,7 @@ Description: use system installation of portaudio/portmidi
  pd_SOURCES += s_audio_pa.c s_audio_paring.c
  endif
  
-@@ -90,8 +90,7 @@
+@@ -96,8 +96,7 @@
  endif
  
  if PORTMIDI
