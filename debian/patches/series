@@ -2,14 +2,5 @@ usercflags.patch
 pd2puredata.patch
 usrlibpd_path.patch
 fixmanpage.patch
-kfreebsd_fixes.patch
-audio_oss_cleanup.patch
 system_portaudio.patch
-hurd_fixes.patch
-clean_helpbrowser.patch
 helpbrowser_puredata-doc.patch
-default_midi_api.patch
-fix_typepunning.patch
-examplepatches.patch
-hardening_fixes.patch
-fix_spelling.patch
