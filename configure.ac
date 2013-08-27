@@ -1,5 +1,5 @@
 AC_PREREQ(2.59)
-AC_INIT(pd,0.44.3)
+AC_INIT(pd,0.45.0)
 AC_CONFIG_SRCDIR(src/m_pd.c)
 AC_CONFIG_AUX_DIR([m4/config])
 AM_INIT_AUTOMAKE
@@ -32,21 +32,25 @@ case $host in
 	 EXTERNAL_EXTENSION=pd_darwin
 	fi
 
-	CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer"
+	CFLAGS="-O3 -funroll-loops -fomit-frame-pointer $CFLAGS"
 	INCLUDES="$INCLUDES -I/sw/include"
 	LDFLAGS="$LDFLAGS -L/sw/lib"
 	EXTERNAL_LDFLAGS="-bundle -undefined dynamic_lookup"
 	;;
-*linux*|GNU|GNU/kFreeBSD)
-# GNU and GNU/kFreeBSD are for Debian, were they are treated very similar to linux
-	if test "x${host}" = "xGNU"; then
-	 HURD=yes
-	fi
+*linux*|*kfreebsd*gnu*)
+# GNU/kFreeBSD are for Debian, were they are treated very similar to linux
 	if test "x${ANDROID}" = "xno"; then
 	 LINUX=yes
 	 portaudio=yes
-	 CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer"
+	 CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer"
 	fi
+	EXTERNAL_CFLAGS="-fPIC"
+	EXTERNAL_LDFLAGS="-Wl,--export-dynamic -shared -fPIC"
+	EXTERNAL_EXTENSION=pd_linux
+	;;
+*-*-gnu*)
+	HURD=yes
+	CFLAGS="-O6 -funroll-loops -fomit-frame-pointer $CFLAGS"
 	EXTERNAL_CFLAGS="-fPIC"
 	EXTERNAL_LDFLAGS="-Wl,--export-dynamic -shared -fPIC"
 	EXTERNAL_EXTENSION=pd_linux
@@ -58,7 +62,7 @@ case $host in
 #        to make the final linking phase use g++
 #		asio=yes
 	portaudio=yes
-	CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer -DWINVER=0x0501 -D_WIN32_WINNT=0x0501"
+	CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer -DWINVER=0x0501 -D_WIN32_WINNT=0x0501"
 # ASIO is a C++ library, so if its included, then use g++ to build
 	CC=g++
 	EXTERNAL_CFLAGS="-mms-bitfields"
@@ -69,7 +73,7 @@ case $host in
 	WINDOWS=yes
 	CYGWIN=yes
 	portaudio=yes
-	CFLAGS="$CFLAGS -O6 -funroll-loops -fomit-frame-pointer"
+	CFLAGS="$CFLAGS -O3 -funroll-loops -fomit-frame-pointer"
 	EXTERNAL_CFLAGS=
 	EXTERNAL_LDFLAGS="-Wl,--export-dynamic -shared -lpd"
 	EXTERNAL_EXTENSION=dll

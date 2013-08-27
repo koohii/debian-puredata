@@ -295,6 +295,8 @@ nobase_dist_libpd_DATA = \
 	doc/5.reference/acoustics~-help.pd \
 	doc/5.reference/adc~_dac~-help.pd \
 	doc/5.reference/append-help.pd \
+	doc/5.reference/array-object-help.pd \
+	doc/5.reference/array-object-help.txt \
 	doc/5.reference/bag-help.pd \
 	doc/5.reference/bang-help.pd \
 	doc/5.reference/bang~-help.pd \
@@ -377,6 +379,7 @@ nobase_dist_libpd_DATA = \
 	doc/5.reference/rzero~-help.pd \
 	doc/5.reference/samphold~-help.pd \
 	doc/5.reference/savepanel-help.pd \
+	doc/5.reference/scalar-object-help.pd \
 	doc/5.reference/select-help.pd \
 	doc/5.reference/send-help.pd \
 	doc/5.reference/send~-help.pd \
@@ -391,7 +394,6 @@ nobase_dist_libpd_DATA = \
 	doc/5.reference/sqrt~-help.pd \
 	doc/5.reference/stripnote-help.pd \
 	doc/5.reference/struct-help.pd \
-	doc/5.reference/sublist-help.pd \
 	doc/5.reference/swap-help.pd \
 	doc/5.reference/switch~-help.pd \
 	doc/5.reference/table.txt \
@@ -404,6 +406,7 @@ nobase_dist_libpd_DATA = \
 	doc/5.reference/tabwrite-help.pd \
 	doc/5.reference/tabwrite~-help.pd \
 	doc/5.reference/text-help.pd \
+	doc/5.reference/text-object-help.pd \
 	doc/5.reference/textfile-help.pd \
 	doc/5.reference/textfile.txt \
 	doc/5.reference/threshold~-help.pd \

@@ -612,9 +612,6 @@ static void *midirealtimein_new( void)
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
     pd_bind(&x->x_obj.ob_pd, midirealtimein_sym);
-#ifndef _WIN32
-    pd_error(x, "midirealtimein: works under MSW only");
-#endif
     return (x);
 }
 
@@ -672,9 +669,6 @@ static void *midiout_new(t_floatarg portno)
     if (portno <= 0) portno = 1;
     x->x_portno = portno;
     floatinlet_new(&x->x_obj, &x->x_portno);
-#ifdef __irix__
-    post("midiout: unimplemented in IRIX");
-#endif
     return (x);
 }
 

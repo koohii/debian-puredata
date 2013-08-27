@@ -29,6 +29,8 @@ proc pdtk_textwindow_open {name geometry title font} {
         pack $name.scroll -side right -fill y
         pack $name.text -side left -fill both -expand 1
         bind $name.text <$::modifier-Key-s> "pdtk_textwindow_send $name"
+        bind $name.text <$::modifier-Key-w> "pdtk_textwindow_close $name 1"
+        focus $name.text
     }
 }
 
@@ -60,6 +62,12 @@ proc pdtk_textwindow_append {name contents} {
     }
 }
 
+proc pdtk_textwindow_clear {name} {
+    if {[winfo exists $name]} {
+        $name.text delete 1.0 end
+    }
+}
+
 proc pdtk_textwindow_send {name} {
     if {[winfo exists $name]} {
         pdsend [concat $name clear]
@@ -68,8 +76,7 @@ proc pdtk_textwindow_send {name} {
               {incr i 1} {
             set lin [$name.text get $i.0 $i.end]
             if {$lin != ""} {
-                regsub -all \; $lin " \\; " tmplin
-                regsub -all \, $tmplin " \\, " lin
+                set lin [string map {"," " \\, " ";" " \\; " "$" "\\$"} $lin]
                 pdsend [concat $name addline $lin]
             }
         }

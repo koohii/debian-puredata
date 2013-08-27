@@ -73,7 +73,7 @@ static int audio_nextinchans, audio_nextoutchans;
 void sched_audio_callbackfn(void);
 void sched_reopenmeplease(void);
 
-static int audio_isopen(void)
+int audio_isopen(void)
 {
     return (audio_state &&
         ((audio_naudioindev > 0 && audio_audiochindev[0] > 0) 
@@ -425,7 +425,7 @@ void sys_reopen_audio( void)
 #ifdef USEAPI_JACK
     if (sys_audioapi == API_JACK) 
         outcome = jack_open_audio((naudioindev > 0 ? chindev[0] : 0),
-            (naudioindev > 0 ? choutdev[0] : 0), rate,
+            (naudiooutdev > 0 ? choutdev[0] : 0), rate,
                 (callback ? sched_audio_callbackfn : 0));
 
     else
@@ -960,7 +960,7 @@ void glob_audio_setapi(void *dummy, t_floatarg f)
     {
         if (newapi == sys_audioapi)
         {
-            if (!audio_isopen())
+            if (!audio_isopen() && audio_shouldkeepopen())
                 sys_reopen_audio();
         }
         else
@@ -1048,7 +1048,7 @@ void alsa_printstate( void);
 #endif
 
     /* debugging */
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
+/* void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *arg = atom_getsymbolarg(0, argc, argv);
     if (arg == gensym("restart"))
@@ -1069,4 +1069,4 @@ void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
         alsa_printstate();
     }
 #endif
-}
+} */

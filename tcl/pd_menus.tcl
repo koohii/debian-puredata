@@ -177,6 +177,11 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
         -variable ::editmode_button \
         -command {menu_editmode $::editmode_button}
+    if {$::windowingsystem ne "aqua"} {
+        $mymenu add  separator
+        create_preferences_menu $mymenu.preferences
+        $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
+    }
 }
 
 proc ::pd_menus::build_put_menu {mymenu} {
@@ -258,11 +263,11 @@ proc ::pd_menus::build_media_menu {mymenu} {
             -value [lindex [lindex $::midi_apilist $x] 1]\
             -command {pdsend "pd midi-setapi $::pd_whichmidiapi"}
     }
-    if {$::windowingsystem ne "aqua"} {
-        $mymenu add  separator
-        create_preferences_menu $mymenu.preferences
-        $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
-    }
+
+    $mymenu add command -label [_ "Audio Settings..."] \
+        -command {pdsend "pd audio-properties"}
+    $mymenu add command -label [_ "MIDI Settings..."] \
+        -command {pdsend "pd midi-properties"}
 }
 
 proc ::pd_menus::build_window_menu {mymenu} {
@@ -479,6 +484,9 @@ proc ::pd_menus::create_preferences_menu {mymenu} {
         -command {pdsend "pd audio-properties"}
     $mymenu add command -label [_ "MIDI Settings..."] \
         -command {pdsend "pd midi-properties"}
+    $mymenu add  separator
+    $mymenu add command -label [_ "Save All Settings"] \
+        -command {pdsend "pd save-preferences"}
 }
 
 # ------------------------------------------------------------------------------
@@ -540,6 +548,8 @@ proc ::pd_menus::build_file_menu_x11 {mymenu} {
     #    $mymenu add command -label "Revert"
     $mymenu add  separator
     $mymenu add command -label [_ "Message..."]    -accelerator "$accelerator+M"
+    create_preferences_menu $mymenu.preferences
+    $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
     $mymenu add command -label [_ "Print..."]   -accelerator "$accelerator+P"
     $mymenu add  separator
     # the recent files get inserted in here by update_recentfiles_on_menu
