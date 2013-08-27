@@ -4,3 +4,4 @@ usrlibpd_path.patch
 fixmanpage.patch
 system_portaudio.patch
 helpbrowser_puredata-doc.patch
+fix_formatsecurity.patch
