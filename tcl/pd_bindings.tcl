@@ -198,9 +198,9 @@ proc ::pd_bindings::window_destroy {window} {
 # do tasks when changing focus (Window menu, scrollbars, etc.)
 proc ::pd_bindings::window_focusin {mytoplevel} {
     # focused_window is used throughout for sending bindings, menu commands,
-    # etc. to the correct patch receiver symbol.
+    # etc. to the correct patch receiver symbol.  MSP took out a line that
+    # confusingly redirected the "find" window which might be in mid search
     set ::focused_window $mytoplevel
-    ::dialog_find::set_window_to_search $mytoplevel
     ::pd_menucommands::set_filenewdir $mytoplevel
     ::dialog_font::update_font_dialog $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
@@ -265,6 +265,7 @@ proc ::pd_bindings::sendkey {window state key iso shift} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
         pdsend "$mytoplevel key $state $key $shift"
+    } else {
+    pdsend "pd key $state $key $shift"
     }
-    # TODO send to 'pd key' for global key events in Pd?
 }

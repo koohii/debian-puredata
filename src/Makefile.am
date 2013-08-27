@@ -27,9 +27,10 @@ pd_SOURCES = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c \
     s_utf8.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
     d_math.c d_fft.c d_array.c d_global.c \
-    d_delay.c d_resample.c \
+    d_delay.c d_resample.c  d_soundfile.c \
     x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
-    x_time.c x_acoustics.c x_net.c x_qlist.c x_gui.c x_list.c d_soundfile.c
+    x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c \
+    x_scalar.c
 
 pd_includedir = ${includedir}/pd
 pd_include_HEADERS = m_pd.h m_imp.h g_canvas.h s_stuff.h g_all_guis.h
@@ -38,7 +39,12 @@ include_HEADERS = m_pd.h
 noinst_HEADERS = g_all_guis.h s_audio_alsa.h s_audio_paring.h s_utf8.h
 
 # we want these in the dist tarball
-EXTRA_DIST = CHANGELOG.txt notes.txt makefile.mingw
+EXTRA_DIST = CHANGELOG.txt notes.txt \
+	pd.ico pd.rc \
+	makefile.gnu  makefile.mac  makefile.mingw  makefile.msvc \
+	d_fft_fftsg.c d_fftsg_h.c \
+	s_audio_dummy.c s_audio_audiounit.c s_audio_esd.c
+
 
 # configurations per library
 if ALSA
@@ -106,7 +112,18 @@ pd_SOURCES += s_midi_dummy.c
 endif
 
 if HURD
-pd_SOURCES += s_midi_dummy.c
+libpdbindir = $(pkglibdir)/bin
+libpdbin_DATA =
+libpdbin_PROGRAMS = pd-watchdog pd
+# this flag has to have a single leading "-" for libtool, even though ld uses
+# --export-dynamic, and libtool sends -Wl,--export-dynamic to ld...
+pd_LDFLAGS += -export-dynamic
+# on Ubuntu/Karmic 9.10, it doesn't seem to find libm, so force it
+pd_LDFLAGS += $(LIBM)
+# force linking to pthread, which should really be done with some autotools way
+pd_LDFLAGS += -lpthread
+# force linking to dl, which should really be done with some autotools way
+pd_LDFLAGS += -ldl
 endif
 
 if LINUX 

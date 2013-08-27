@@ -18,7 +18,6 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
     int selectem);
 
 void open_via_helppath(const char *name, const char *dir);
-char *class_gethelpdir(t_class *c);
 
 /* ------------------ forward declarations --------------- */
 static void canvas_doclear(t_canvas *x);
@@ -190,9 +189,6 @@ static void glist_checkanddeselectall(t_glist *gl, t_gobj *g)
 void glist_deselect(t_glist *x, t_gobj *y)
 {
     int fixdsp = 0;
-    static int reenter = 0;
-    /* if (reenter) return; */
-    reenter = 1;
     if (x->gl_editor)
     {
         t_selection *sel, *sel2;
@@ -247,7 +243,6 @@ void glist_deselect(t_glist *x, t_gobj *y)
         if (fixdsp)
             canvas_resume_dsp(1);
     }
-    reenter = 0;
 }
 
 void glist_noselect(t_glist *x)
@@ -782,7 +777,8 @@ static char *cursorlist[] = {
     "$cursor_runmode_addpoint",
     "$cursor_editmode_nothing",
     "$cursor_editmode_connect",
-    "$cursor_editmode_disconnect"
+    "$cursor_editmode_disconnect",
+    "$cursor_editmode_resize"
 };
 
 void canvas_setcursor(t_canvas *x, unsigned int cursornum)
@@ -1314,9 +1310,30 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
         }
         else
         {
-                /* look for an outlet */
             int noutlet;
-            if (ob && (noutlet = obj_noutlets(ob)) && ypos >= y2-4)
+                /* resize?  only for "true" text boxes or canvases*/
+            if (ob && !x->gl_editor->e_selection &&
+                (ob->te_pd->c_wb == &text_widgetbehavior ||
+                    pd_checkglist(&ob->te_pd)) &&
+                        xpos >= x2-4 && ypos < y2-4)
+            {
+                if (doit)
+                {
+                    if (!glist_isselected(x, y))
+                    {
+                        glist_noselect(x);
+                        glist_select(x, y);
+                    }
+                    x->gl_editor->e_onmotion = MA_RESIZE;
+                    x->gl_editor->e_xwas = x1;
+                    x->gl_editor->e_ywas = y1;
+                    x->gl_editor->e_xnew = xpos;
+                    x->gl_editor->e_ynew = ypos;
+                }                                   
+                else canvas_setcursor(x, CURSOR_EDITMODE_RESIZE);
+            }
+                /* look for an outlet */
+            else if (ob && (noutlet = obj_noutlets(ob)) && ypos >= y2-4)
             {
                 int width = x2 - x1;
                 int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
@@ -1341,6 +1358,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 }
                 else if (doit)
                     goto nooutletafterall;
+                else canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
             }
                 /* not in an outlet; select and move */
             else if (doit)
@@ -1368,7 +1386,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                     x->gl_editor->e_onmotion = MA_MOVE;
                 }
             }
-            else canvas_setcursor(x, CURSOR_EDITMODE_NOTHING); 
+            else canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
         }
         return;
     }
@@ -1586,9 +1604,11 @@ void canvas_mouseup(t_canvas *x,
         canvas_doconnect(x, xpos, ypos, which, 1);
     else if (x->gl_editor->e_onmotion == MA_REGION)
         canvas_doregion(x, xpos, ypos, 1);
-    else if (x->gl_editor->e_onmotion == MA_MOVE)
+    else if (x->gl_editor->e_onmotion == MA_MOVE ||
+        x->gl_editor->e_onmotion == MA_RESIZE)
     {
-            /* after motion, if there's only one item selected, activate it */
+            /* after motion or resizing, if there's only one text item
+                selected, activate the text */
         if (x->gl_editor->e_selection &&
             !(x->gl_editor->e_selection->sel_next))
         {
@@ -1655,8 +1675,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     
     if (ac < 3)
         return;
-    if (!x || !x->gl_editor)
-        return;
+
     canvas_undo_already_set_move = 0;
     down = (atom_getfloat(av) != 0);  /* nonzero if it's a key down */
     shift = (atom_getfloat(av+2) != 0);  /* nonzero if shift-ed */
@@ -1730,7 +1749,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         SETSYMBOL(at+1, gotkeysym);
         pd_list(keynamesym->s_thing, 0, 2, at);
     }
-    if (!x->gl_editor)  /* if that 'invis'ed the window, we'd better stop. */
+    if (!x || !x->gl_editor)  /* if that 'invis'ed the window, we'd better stop. */
         return;
     if (x && down)
     {
@@ -1841,6 +1860,42 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
         if (rt)
             rtext_mouse(rt, xpos - x->gl_editor->e_xwas,
                 ypos - x->gl_editor->e_ywas, RTEXT_DRAG);
+    }
+    else if (x->gl_editor->e_onmotion == MA_RESIZE)
+    {
+        int x11=0, y11=0, x12=0, y12=0; 
+        t_gobj *y1;
+        if (y1 = canvas_findhitbox(x,
+            x->gl_editor->e_xwas, x->gl_editor->e_ywas,
+                &x11, &y11, &x12, &y12))
+        {
+            int wantwidth = xpos - x11;
+            t_gotfn sizefn;
+            t_object *ob = pd_checkobject(&y1->g_pd);
+            if (ob && ob->te_pd->c_wb == &text_widgetbehavior ||
+                    (pd_checkglist(&ob->te_pd) &&
+                        !((t_canvas *)ob)->gl_isgraph))
+            {
+                wantwidth = wantwidth / sys_fontwidth(glist_getfont(x));
+                if (wantwidth < 1)
+                    wantwidth = 1;
+                ob->te_width = wantwidth;
+                gobj_vis(y1, x, 0);
+                canvas_fixlinesfor(x, ob);
+                gobj_vis(y1, x, 1);
+            }
+            else if (ob && ob->ob_pd == canvas_class)
+            {
+                gobj_vis(y1, x, 0);
+                ((t_canvas *)ob)->gl_pixwidth += xpos - x->gl_editor->e_xnew;
+                ((t_canvas *)ob)->gl_pixheight += ypos - x->gl_editor->e_ynew;
+                x->gl_editor->e_xnew = xpos;
+                x->gl_editor->e_ynew = ypos;
+                canvas_fixlinesfor(x, ob);
+                gobj_vis(y1, x, 1);
+            }
+            else post("not resizable");
+        }
     }
     else canvas_doclick(x, xpos, ypos, 0, mod, 0);
     
@@ -1964,82 +2019,102 @@ static void canvas_menufont(t_canvas *x)
     gfxstub_new(&x2->gl_pd, &x2->gl_pd, buf);
 }
 
-static int canvas_find_index1, canvas_find_index2, canvas_find_wholeword;
+static int canvas_find_index, canvas_find_wholeword;
 static t_binbuf *canvas_findbuf;
-int binbuf_match(t_binbuf *inbuf, t_binbuf *searchbuf, int wholeword);
 
-    /* find an atom or string of atoms */
-static int canvas_dofind(t_canvas *x, int *myindex1p)
+    /* function to support searching */
+static int atoms_match(int inargc, t_atom *inargv, int searchargc,
+    t_atom *searchargv, int wholeword)
 {
-    t_gobj *y;
-    int myindex1 = *myindex1p, myindex2;
-    if (myindex1 >= canvas_find_index1)
+    int indexin, nmatched;
+    for (indexin = 0; indexin <= inargc - searchargc; indexin++)
     {
-        for (y = x->gl_list, myindex2 = 0; y;
-            y = y->g_next, myindex2++)
+        for (nmatched = 0; nmatched < searchargc; nmatched++)
         {
-            t_object *ob = 0;
-            if (ob = pd_checkobject(&y->g_pd))
+            t_atom *a1 = &inargv[indexin + nmatched], 
+                *a2 = &searchargv[nmatched];
+            if (a1->a_type == A_SEMI || a1->a_type == A_COMMA)
             {
-                if (binbuf_match(ob->ob_binbuf, canvas_findbuf,
-                    canvas_find_wholeword))
-                {
-                    if (myindex1 > canvas_find_index1 ||
-                        myindex1 == canvas_find_index1 &&
-                            myindex2 > canvas_find_index2)
-                    {
-                        canvas_find_index1 = myindex1;
-                        canvas_find_index2 = myindex2;
-                        glist_noselect(x);
-                        vmess(&x->gl_pd, gensym("menu-open"), "");
-                        canvas_editmode(x, 1.);
-                        glist_select(x, y);
-                        return (1);
-                    }
-                }
+                if (a2->a_type != a1->a_type)
+                    goto nomatch;
             }
+            else if (a1->a_type == A_FLOAT || a1->a_type == A_DOLLAR)
+            {
+                if (a2->a_type != a1->a_type || 
+                    a1->a_w.w_float != a2->a_w.w_float)
+                        goto nomatch;
+            }
+            else if (a1->a_type == A_SYMBOL || a1->a_type == A_DOLLSYM)
+            {
+                if ((a2->a_type != A_SYMBOL && a2->a_type != A_DOLLSYM)
+                    || (wholeword && a1->a_w.w_symbol != a2->a_w.w_symbol)
+                    || (!wholeword &&  !strstr(a1->a_w.w_symbol->s_name,
+                                        a2->a_w.w_symbol->s_name)))
+                        goto nomatch;
+            }           
         }
-    }
-    for (y = x->gl_list, myindex2 = 0; y; y = y->g_next, myindex2++)
-    {
-        if (pd_class(&y->g_pd) == canvas_class)
-        {
-            (*myindex1p)++;
-            if (canvas_dofind((t_canvas *)y, myindex1p))
-                return (1);
-        }
+        return (1);
+    nomatch: ;
     }
     return (0);
 }
 
+    /* find an atom or string of atoms */
+static int canvas_dofind(t_canvas *x, int *myindexp)
+{
+    t_gobj *y;
+    int findargc = binbuf_getnatom(canvas_findbuf), didit = 0;
+    t_atom *findargv = binbuf_getvec(canvas_findbuf);
+    for (y = x->gl_list; y; y = y->g_next)
+    {
+        t_object *ob = 0;
+        if (ob = pd_checkobject(&y->g_pd))
+        {
+            if (atoms_match(binbuf_getnatom(ob->ob_binbuf), 
+                binbuf_getvec(ob->ob_binbuf), findargc, findargv,
+                    canvas_find_wholeword))
+            {
+                if (*myindexp == canvas_find_index)
+                {
+                    glist_noselect(x);
+                    vmess(&x->gl_pd, gensym("menu-open"), "");
+                    canvas_editmode(x, 1.);
+                    glist_select(x, y);
+                    didit = 1;
+                }
+                (*myindexp)++;
+            }
+        }
+    }
+    for (y = x->gl_list; y; y = y->g_next)
+        if (pd_class(&y->g_pd) == canvas_class)
+            didit |= canvas_dofind((t_canvas *)y, myindexp);
+    return (didit);
+}
+
 static void canvas_find(t_canvas *x, t_symbol *s, t_floatarg wholeword)
 {
-    int myindex1 = 0;
+    int myindex = 0;
     t_symbol *decodedsym = sys_decodedialog(s);
     if (!canvas_findbuf)
         canvas_findbuf = binbuf_new();
     binbuf_text(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
-    canvas_find_index1 = 0;
-    canvas_find_index2 = -1;
+    canvas_find_index = 0;
     canvas_find_wholeword = wholeword;
     canvas_whichfind = x;
-    if (!canvas_dofind(x, &myindex1))
-    {
-        binbuf_print(canvas_findbuf);
+    if (!canvas_dofind(x, &myindex))
         sys_vgui("pdtk_couldnotfind .x%lx\n", x);
-    }
+    else post("found item %d out of %d total", ++canvas_find_index, myindex);
 }
 
 static void canvas_find_again(t_canvas *x)
 {
-    int myindex1 = 0;
+    int myindex = 0;
     if (!canvas_findbuf || !canvas_whichfind)
         return;
-    if (!canvas_dofind(canvas_whichfind, &myindex1))
-    {
-        binbuf_print(canvas_findbuf);
+    if (!canvas_dofind(canvas_whichfind, &myindex))
         sys_vgui("pdtk_couldnotfind .x%lx\n", x);
-    }
+    else post("found item %d out of %d total", ++canvas_find_index, myindex);
 }
 
 static void canvas_find_parent(t_canvas *x)
@@ -2235,6 +2310,7 @@ static void canvas_doclear(t_canvas *x)
         the glist to reselect. */
     if (x->gl_editor->e_textedfor)
     {
+        t_gobj *selwas = x->gl_editor->e_selection->sel_what;
         newest = 0;
         glist_noselect(x);
         if (newest)
@@ -2251,10 +2327,6 @@ static void canvas_doclear(t_canvas *x)
             if (glist_isselected(x, y))
             {
                 glist_delete(x, y);
-#if 0
-                if (y2) post("cut 5 %lx %lx", y2, y2->g_next);
-                else post("cut 6");
-#endif
                 goto next;
             }
         }
@@ -2277,14 +2349,21 @@ static void canvas_cut(t_canvas *x)
         char *buf;
         int bufsize;
         rtext_getseltext(x->gl_editor->e_textedfor, &buf, &bufsize);
-        if (!bufsize)
-            return;
+        if (!bufsize && x->gl_editor->e_selection &&
+            !x->gl_editor->e_selection->sel_next)
+        {
+            t_object *ob = (t_object *)x->gl_editor->e_selection->sel_what;
+            glist_noselect(x);
+            glist_select(x, &ob->te_g);
+            goto deleteobj;
+        }
         canvas_copy(x);
         rtext_key(x->gl_editor->e_textedfor, 127, &s_);
         canvas_dirty(x, 1);
     }
     else if (x->gl_editor && x->gl_editor->e_selection)
     {
+    deleteobj:
         canvas_setundo(x, canvas_undo_cut,
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
@@ -2602,14 +2681,30 @@ void glob_key(void *dummy, t_symbol *s, int ac, t_atom *av)
 
 void canvas_editmode(t_canvas *x, t_floatarg state)
 {
+    if (x->gl_edit == (unsigned int) state)
+        return;
     x->gl_edit = (unsigned int) state;
     if (x->gl_edit && glist_isvisible(x) && glist_istoplevel(x))
+    {
+        t_gobj *g;
+        t_object *ob;
         canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+        for (g = x->gl_list; g; g = g->g_next)
+            if ((ob = pd_checkobject(&g->g_pd)) && ob->te_type == T_TEXT)
+        {
+            t_rtext *y = glist_findrtext(x, ob);
+            text_drawborder(ob, x,
+                rtext_gettag(y), rtext_width(y), rtext_height(y), 1);
+        }
+    }
     else
     {
         glist_noselect(x);
         if (glist_isvisible(x) && glist_istoplevel(x))
+        {
             canvas_setcursor(x, CURSOR_RUNMODE_NOTHING);
+            sys_vgui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
+        }
     }
     if (glist_isvisible(x))
       sys_vgui("pdtk_canvas_editmode .x%lx %d\n",
@@ -2638,9 +2733,8 @@ static void canvas_dofont(t_canvas *x, t_floatarg font, t_floatarg xresize,
     if (glist_isvisible(x))
         glist_redraw(x);
     for (y = x->gl_list; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class
-            && !canvas_isabstraction((t_canvas *)y))
-                canvas_dofont((t_canvas *)y, font, xresize, yresize);
+        if (pd_checkglist(&y->g_pd)  && !canvas_isabstraction((t_canvas *)y))
+            canvas_dofont((t_canvas *)y, font, xresize, yresize);
 }
 
     /* canvas_menufont calls up a TK dialog which calls this back */
@@ -2727,8 +2821,6 @@ void g_editor_setup(void)
         gensym("find"), A_SYMBOL, A_FLOAT, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_find_again,
         gensym("findagain"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_find_parent,
-        gensym("findparent"), A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_done_popup,
         gensym("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_donecanvasdialog,
@@ -2744,4 +2836,22 @@ void g_editor_setup(void)
         gensym("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 /* -------------- copy buffer ------------------ */
     copy_binbuf = binbuf_new();
+}
+
+void canvas_editor_for_class(t_class *c)
+{
+    class_addmethod(c, (t_method)canvas_mouse, gensym("mouse"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addmethod(c, (t_method)canvas_mouseup, gensym("mouseup"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addmethod(c, (t_method)canvas_key, gensym("key"),
+        A_GIMME, A_NULL);
+    class_addmethod(c, (t_method)canvas_motion, gensym("motion"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+
+/* ------------------------ menu actions ---------------------------- */
+    class_addmethod(c, (t_method)canvas_menuclose,
+        gensym("menuclose"), A_DEFFLOAT, 0);
+    class_addmethod(c, (t_method)canvas_find_parent,
+        gensym("findparent"), A_NULL);
 }

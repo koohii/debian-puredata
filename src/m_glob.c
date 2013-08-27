@@ -9,7 +9,7 @@ t_class *glob_pdobject;
 static t_class *maxclass;
 
 int sys_perf;   /* true if we should query user on close and quit */
-int pd_compatibilitylevel;  /* e.g., 43 for pd 0.43 compatibility */
+int pd_compatibilitylevel = 100000;  /* e.g., 43 for pd 0.43 compatibility */
 
 /* These "glob" routines, which implement messages to Pd, are from all
 over.  Some others are prototyped in m_imp.h as well. */
@@ -50,10 +50,12 @@ void glob_audio(void *dummy, t_floatarg adc, t_floatarg dac);
 /* a method you add for debugging printout */
 void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv);
 
-#if 0
+#if 1
 void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    *(int *)1 = 3;
+    post("foo 1");
+    printf("barbarbar 2\n");
+    post("foo 3");
 }
 #endif
 
@@ -66,7 +68,7 @@ static void glob_version(t_pd *dummy, float f)
             post("warning: file format (%g) newer than this version (%g) of Pd",
                 f, PD_MAJOR_VERSION + 0.01*PD_MINOR_VERSION);
         else if (warned < 2)
-            post("(... more file format messsages suppressed)");
+            post("(... more file format messages suppressed)");
         warned++;
     }
 }
@@ -148,7 +150,7 @@ void glob_init(void)
         gensym("perf"), A_FLOAT, 0);
     class_addmethod(glob_pdobject, (t_method)glob_compatibility,
         gensym("compatibility"), A_FLOAT, 0);
-#if defined(__linux__) || defined(IRIX) || defined(__FreeBSD_kernel__)
+#if defined(__linux__) || defined(__FreeBSD_kernel__)
     class_addmethod(glob_pdobject, (t_method)glob_watchdog,
         gensym("watchdog"), 0);
 #endif

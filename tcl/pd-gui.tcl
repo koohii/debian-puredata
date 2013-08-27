@@ -62,6 +62,7 @@ namespace import ::pd_menucommands::*
 namespace import ::pd_connect::pdsend
 namespace import ::pdwindow::pdtk_post
 namespace import ::pdwindow::pdtk_pd_dio
+namespace import ::pdwindow::pdtk_pd_audio
 namespace import ::pdwindow::pdtk_pd_dsp
 namespace import ::pdwindow::pdtk_pd_meters
 namespace import ::pdtk_canvas::pdtk_canvas_popup
@@ -269,7 +270,9 @@ proc set_pd_paths {} {
 proc init_for_platform {} {
     # we are not using Tk scaling, so fix it to 1 on all platforms.  This
     # guarantees that patches will be pixel-exact on every platform
-    tk scaling 1
+    # 2013.07.19 msp - trying without this to see what breaks - it's having
+    # deleterious effects on dialog window font sizes.
+    # tk scaling 1
 
     switch -- $::windowingsystem {
         "x11" {
@@ -304,6 +307,7 @@ proc init_for_platform {} {
             set ::cursor_editmode_nothing "hand2"
             set ::cursor_editmode_connect "circle"
             set ::cursor_editmode_disconnect "X_cursor"
+            set ::cursor_editmode_resize "sb_h_double_arrow"
         }
         "aqua" {
             set ::modifier "Mod1"
@@ -336,6 +340,7 @@ proc init_for_platform {} {
             set ::cursor_editmode_nothing "hand2"
             set ::cursor_editmode_connect "circle"
             set ::cursor_editmode_disconnect "X_cursor"
+            set ::cursor_editmode_resize "sb_h_double_arrow"
         }
         "win32" {
             set ::modifier "Control"
@@ -373,6 +378,7 @@ proc init_for_platform {} {
             set ::cursor_editmode_nothing "hand2"
             set ::cursor_editmode_connect "circle"
             set ::cursor_editmode_disconnect "X_cursor"
+            set ::cursor_editmode_resize "sb_h_double_arrow"
         }
     }
 }
