@@ -1,4 +1,6 @@
-puredata (0.45.1-1) UNRELEASED; urgency=low
+puredata (0.45.1-1) unstable; urgency=low
+
+  * New upstream release.
 
   [ IOhannes m zmoelnig ]
   * Imported Upstream version 0.45.1
@@ -6,7 +8,7 @@ puredata (0.45.1-1) UNRELEASED; urgency=low
     * Refreshed patches
     * Removed patches included Upstream
 
- -- IOhannes m zmoelnig <zmoelnig@umlautO.umlaeute.mur.at>  Thu, 29 Aug 2013 09:21:27 +0200
+ -- IOhannes m zmoelnig (gpg-key at iem) <zmoelnig@iem.at>  Thu, 29 Aug 2013 09:44:20 +0200
 
 puredata (0.44.3-1) unstable; urgency=low
 
