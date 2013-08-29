@@ -1,3 +1,13 @@
+puredata (0.45.1-1) UNRELEASED; urgency=low
+
+  [ IOhannes m zmoelnig ]
+  * Imported Upstream version 0.45.1
+  * Adjusted debian/patches to new upstream
+    * Refreshed patches
+    * Removed patches included Upstream
+
+ -- IOhannes m zmoelnig <zmoelnig@umlautO.umlaeute.mur.at>  Thu, 29 Aug 2013 09:21:27 +0200
+
 puredata (0.44.3-1) unstable; urgency=low
 
   * New upstream release.
