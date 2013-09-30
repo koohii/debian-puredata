@@ -1,11 +1,3 @@
-puredata (0.45.2-1) unstable; urgency=low
-
-  * Imported Upstream version 0.45.2
-  * Drop Build-depends on portmidi for non-linux architectures
-  * Fixed my Uploaders name
-
- -- IOhannes m zmölnig <zmoelnig@iem.at>  Mon, 30 Sep 2013 17:21:57 +0200
-
 puredata (0.45.1-1) unstable; urgency=low
 
   * New upstream release.
