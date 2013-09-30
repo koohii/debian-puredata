@@ -10,7 +10,6 @@ Build-Depends: debhelper (>= 7.0.50~),
  gettext,
  libasound2-dev [linux-any],
  portaudio19-dev,
- libportmidi-dev [linux-any],
  libjack-dev
 Standards-Version: 3.9.4
 Homepage: http://puredata.info
