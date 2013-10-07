@@ -1,13 +1,18 @@
-puredata (0.45.2-1) unstable; urgency=low
+puredata (0.45.3-1) unstable; urgency=low
 
   * New upstream release.
 
   [ IOhannes m zmölnig ]
-  * Imported Upstream version 0.45.2
-  * Fixed my Uploaders name
+  * Imported Upstream version 0.45.3
   * Drop Build-Dependency on portmidi
+    * portmidi does not exist on non-linux
+    * portmidi is not used anyhow
+  * Fixed typo in package description (Closes: #725472)
+  * Fixed my Uploaders name
+  * Adjusted debian/patches to new upstream
+    * Added helper-script for updating volatile patches
 
- -- IOhannes m zmölnig <zmoelnig@iem.at>  Mon, 30 Sep 2013 18:26:28 +0200
+ -- IOhannes m zmölnig <zmoelnig@iem.at>  Mon, 07 Oct 2013 15:11:56 +0200
 
 puredata (0.45.1-1) unstable; urgency=low
 
