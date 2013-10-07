@@ -105,7 +105,7 @@ Description: realtime computer music and graphics system - utility programs
  for audio and graphics processing.
  .
  This package provides utility applications for puredata, namely pdsend and
- pdreceive, for sending and rceiving FUDI over the net.
+ pdreceive, for sending and receiving FUDI over the net.
 
 Package: puredata-extra
 Architecture: any
