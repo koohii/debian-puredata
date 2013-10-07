@@ -1,0 +1,26 @@
+#!/bin/sh
+
+## this is a small helper-script to ease updating
+## of debian/patches/pd2puredata
+##
+## the problem with that patch is, that the line that
+## needs to be changed contains the version number, and
+## is thus updated by upstream for each release, which
+## makes quilt fail.
+## this script will replace the last-version number in the
+## patch by the current version number
+##
+## (c) 2013 IOhannes m zmölnig
+
+CONFIGUREFILE=configure.ac
+PATCHFILE=debian/patches/pd2puredata.patch
+
+PDVERSION=$(cat "${CONFIGUREFILE}" \
+		| grep AC_INIT \
+		| sed -e 's|^.*,\([^)]*\).*$|\1|')
+
+echo "new Pd-version is ${PDVERSION}"
+
+
+sed -e "s|^\(.*AC_INIT([^,]*\),[0-9.]*)$|\1,${PDVERSION})|g" \
+	-i "${PATCHFILE}"
